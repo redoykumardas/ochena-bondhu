@@ -52,7 +52,7 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-.connecting-logo { width: 48px; height: auto; opacity: 0.4; }
+.connecting-logo { width: 72px; height: auto; opacity: 0.4; }
 
 #connecting p {
   font-size: 13px;
@@ -73,7 +73,7 @@ body {
   gap: 16px;
 }
 
-.card-logo { width: 44px; height: auto; }
+.card-logo { width: 64px; height: auto; }
 
 .card h1 {
   font-size: 22px;
@@ -137,7 +137,7 @@ body {
   width: min(88vw, 360px);
 }
 
-.hero-logo { width: 64px; height: auto; }
+.hero-logo { width: 96px; height: auto; }
 
 .hero h1 {
   font-size: 26px;
