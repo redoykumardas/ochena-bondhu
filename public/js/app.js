@@ -108,14 +108,25 @@ function handle(msg) {
 async function startLocalStream() {
   if (localStream) return localStream;
   if (!navigator.mediaDevices) throw new Error('Camera unavailable. Use http://localhost:3000');
+
+  if (navigator.mediaDevices.enumerateDevices) {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const hasMic = devices.some(d => d.kind === 'audioinput');
+    if (!hasMic) {
+      localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      sysMsg('No mic found — video only');
+      return localStream;
+    }
+  }
+
   try {
     localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
     return localStream;
   } catch (e) {
-    console.error('Mic/camera error:', e.name, e.message);
     if (e.name === 'NotAllowedError') throw new Error('Allow camera AND microphone in browser settings.');
-    if (e.name === 'NotFoundError') throw new Error('No microphone found. Check your device.');
-    throw new Error('Camera/mic error: ' + e.message);
+    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+    sysMsg('Mic unavailable — video only');
+    return localStream;
   }
 }
 
