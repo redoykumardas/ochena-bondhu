@@ -16,6 +16,25 @@ let connecting = false;
 
 const $ = id => document.getElementById(id);
 
+const quotes = [
+  'Someone is waiting to meet you',
+  'যার সাথে কথা বলবেন, সে আসছে',
+  'New friends are just a click away',
+  'দুই অচেনা, এক বন্ধন',
+  'Strangers are just friends you haven\'t met',
+  'আপনার পরবর্তী বন্ধু অপেক্ষা করছে',
+  'The best connections start here',
+];
+
+let quoteIdx = 0;
+setInterval(() => {
+  const el = document.getElementById('cquote');
+  if (el) {
+    quoteIdx = (quoteIdx + 1) % quotes.length;
+    el.textContent = quotes[quoteIdx];
+  }
+}, 4000);
+
 function connect() {
   if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) return;
   if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }

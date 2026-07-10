@@ -12,9 +12,25 @@
 </head>
 <body>
   <div id="connecting" class="screen">
+    <svg class="connecting-art" viewBox="0 0 200 160" fill="none">
+      <circle cx="70" cy="60" r="28" stroke="#30d158" stroke-width="3" fill="none" opacity="0.8"/>
+      <circle cx="130" cy="60" r="28" stroke="#64d2ff" stroke-width="3" fill="none" opacity="0.8"/>
+      <circle cx="62" cy="52" r="4" fill="#30d158" opacity="0.6"/>
+      <circle cx="78" cy="52" r="4" fill="#30d158" opacity="0.6"/>
+      <circle cx="122" cy="52" r="4" fill="#64d2ff" opacity="0.6"/>
+      <circle cx="138" cy="52" r="4" fill="#64d2ff" opacity="0.6"/>
+      <path d="M70 72 Q70 90 100 90 Q130 90 130 72" stroke="#888" stroke-width="2" fill="none" stroke-dasharray="4 3" class="smile-left"/>
+      <path d="M100 100 L100 130" stroke="#30d158" stroke-width="2" opacity="0.4" stroke-dasharray="3 3"/>
+      <path d="M100 130 Q85 125 75 135" stroke="#64d2ff" stroke-width="1.5" opacity="0.5"/>
+      <path d="M100 130 Q115 125 125 135" stroke="#30d158" stroke-width="1.5" opacity="0.5"/>
+      <g class="pulse-dots">
+        <circle cx="100" cy="20" r="2" fill="#30d158" opacity="0.6"/>
+        <circle cx="100" cy="12" r="1.5" fill="#64d2ff" opacity="0.4"/>
+      </g>
+    </svg>
     <img src="logo.svg" alt="Ochena Bondhu" class="connecting-logo">
-    <div class="spinner"></div>
-    <div>Connecting...</div>
+    <div class="connecting-text" id="connecting-text">Finding your অচেনা বন্ধু...</div>
+    <div class="connecting-quote" id="cquote">Someone is waiting to meet you</div>
   </div>
 
   <div id="profile" class="screen hidden">
