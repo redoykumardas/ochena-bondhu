@@ -421,6 +421,11 @@ function handle(msg) {
       }
       const lc = $('live-count');
       if (lc) lc.textContent = msg.count || 0;
+      const co = $('cta-online');
+      if (co) {
+        const c = msg.count || 0;
+        co.textContent = `${c} people online now`;
+      }
       break;
   }
 }
