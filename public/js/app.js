@@ -303,29 +303,48 @@ function show(name) {
   } else {
     stopFindTimer();
   }
+  // stop perm preview when leaving perm screen
+  if (name !== 'perm' && permStream) {
+    permStream.getTracks().forEach(t => t.stop());
+    permStream = null;
+  }
 }
 
 // Events
+let permStream = null;
+
 $('perm-btn').addEventListener('click', async () => {
   $('perm-error').classList.add('hidden');
   $('perm-btn').textContent = 'Requesting...';
   $('perm-btn').disabled = true;
   try {
-    await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    if (permStream) permStream.getTracks().forEach(t => t.stop());
+    permStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    $('perm-video').srcObject = permStream;
     localStorage.setItem('ob_perm', '1');
     permGranted = true;
-    const p = getProfile();
-    if (p) {
-      const t = document.querySelector('.hero-tag');
-      if (t) t.textContent = 'Welcome back, ' + p.name;
-      show('start');
-    } else {
-      show('profile');
-    }
+    $('perm-btn').textContent = '✅ Access Granted';
+    setTimeout(() => {
+      const p = getProfile();
+      if (p) {
+        const t = document.querySelector('.hero-tag');
+        if (t) t.textContent = 'Welcome back, ' + p.name;
+        show('start');
+      } else {
+        show('profile');
+      }
+    }, 600);
   } catch (e) {
-    $('perm-error').textContent = 'Camera and microphone access is required. Please allow in browser settings.';
-    $('perm-error').classList.remove('hidden');
-    $('perm-btn').textContent = 'Allow & Continue';
+    const errEl = $('perm-error');
+    if (e.name === 'NotAllowedError') {
+      errEl.textContent = 'Camera/mic was blocked. Please click the camera icon in your browser address bar and allow access, then try again.';
+    } else if (e.name === 'NotFoundError') {
+      errEl.textContent = 'No camera or microphone found. Connect one and try again.';
+    } else {
+      errEl.textContent = 'Camera access failed: ' + e.message + '. Check browser settings.';
+    }
+    errEl.classList.remove('hidden');
+    $('perm-btn').textContent = 'Try Again';
     $('perm-btn').disabled = false;
   }
 });
