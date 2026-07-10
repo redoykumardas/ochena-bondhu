@@ -112,18 +112,11 @@ async function startLocalStream() {
     localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
     return localStream;
   } catch (e) {
-    console.error('Audio+video failed:', e.name, e.message);
-    if (e.name === 'NotAllowedError') throw new Error('Camera/mic access denied. Allow in browser settings.');
-    sysMsg('Microphone unavailable - video only');
+    console.error('Mic/camera error:', e.name, e.message);
+    if (e.name === 'NotAllowedError') throw new Error('Allow camera AND microphone in browser settings.');
+    if (e.name === 'NotFoundError') throw new Error('No microphone found. Check your device.');
+    throw new Error('Camera/mic error: ' + e.message);
   }
-  try {
-    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-    return localStream;
-  } catch (e) {
-    console.error('Video only failed:', e.name, e.message);
-    if (e.name === 'NotAllowedError') throw new Error('Camera access denied.');
-  }
-  throw new Error('No camera found on this device.');
 }
 
 async function startPeerConnection() {
