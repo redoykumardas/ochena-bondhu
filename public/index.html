@@ -27,11 +27,16 @@
     <div id="partner-box">
       <video id="partner-video" autoplay playsinline></video>
       <div id="placeholder" class="hidden">
-        <svg viewBox="0 0 80 80" fill="none">
-          <circle cx="40" cy="28" r="14" fill="currentColor" opacity="0.6"/>
-          <path d="M16 68c0-14 10.8-24 24-24s24 10 24 24" stroke="currentColor" stroke-width="3" fill="none" opacity="0.6"/>
-        </svg>
-        <div id="status-text">Finding a partner...</div>
+        <div class="search-anim">
+          <div class="pulse-ring"></div>
+          <div class="pulse-ring inner"></div>
+          <svg class="search-icon" viewBox="0 0 80 80" fill="none">
+            <circle cx="40" cy="28" r="14" fill="currentColor" opacity="0.6"/>
+            <path d="M16 68c0-14 10.8-24 24-24s24 10 24 24" stroke="currentColor" stroke-width="3" fill="none" opacity="0.6"/>
+          </svg>
+        </div>
+        <div id="status-text" class="status-glitch">Finding a partner...</div>
+        <div class="status-hint">Tap Next anytime to skip</div>
       </div>
     </div>
 
