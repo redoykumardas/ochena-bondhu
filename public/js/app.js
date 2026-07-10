@@ -108,13 +108,20 @@ function handle(msg) {
 async function startLocalStream() {
   if (localStream) return localStream;
   if (!navigator.mediaDevices) throw new Error('Camera unavailable. Use http://localhost:3000');
-  for (const c of [{ video: true, audio: true }, { video: true, audio: false }]) {
-    try {
-      localStream = await navigator.mediaDevices.getUserMedia(c);
-      return localStream;
-    } catch (e) {
-      if (e.name === 'NotAllowedError') throw new Error('Camera access denied. Allow in browser settings.');
-    }
+  try {
+    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    return localStream;
+  } catch (e) {
+    console.error('Audio+video failed:', e.name, e.message);
+    if (e.name === 'NotAllowedError') throw new Error('Camera/mic access denied. Allow in browser settings.');
+    sysMsg('Microphone unavailable - video only');
+  }
+  try {
+    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+    return localStream;
+  } catch (e) {
+    console.error('Video only failed:', e.name, e.message);
+    if (e.name === 'NotAllowedError') throw new Error('Camera access denied.');
   }
   throw new Error('No camera found on this device.');
 }
