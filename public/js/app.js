@@ -212,22 +212,7 @@ function show(name) {
 }
 
 function playConnectSound() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(880, ctx.currentTime);
-    osc.frequency.setValueAtTime(1100, ctx.currentTime + 0.1);
-    osc.frequency.setValueAtTime(1320, ctx.currentTime + 0.2);
-    gain.gain.setValueAtTime(0.3, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.5);
-    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
-  } catch (_) {}
+  try { if (navigator.vibrate) navigator.vibrate([100, 50, 100]); } catch (_) {}
 }
 
 function addMsg(text, who) {
