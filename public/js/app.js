@@ -2,12 +2,14 @@ const CONFIG = {
   wsUrl: `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`,
   iceServers: [
     { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:stun1.l.google.com:19302' }
+    { urls: 'stun:stun1.l.google.com:19302' },
+    { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' }
   ]
 };
 
 let ws, localStream, pc;
 let userId, partnerId, isInitiator;
+let pendingCandidates = [];
 let unread = 0;
 let reconnectTimer = null;
 let connecting = false;
@@ -61,7 +63,7 @@ function handle(msg) {
       if (!pc) createPC(false);
       if (pc.signalingState === 'stable') {
         pc.setRemoteDescription(new RTCSessionDescription(msg.sdp))
-          .then(() => pc.createAnswer())
+          .then(() => { flushCandidates(); return pc.createAnswer(); })
           .then(a => pc.setLocalDescription(a))
           .then(() => ws.send(JSON.stringify({ type: 'answer', sdp: pc.localDescription })))
           .catch(e => console.error('Answer error:', e));
@@ -70,12 +72,17 @@ function handle(msg) {
     case 'answer':
       if (pc && pc.signalingState === 'have-local-offer') {
         pc.setRemoteDescription(new RTCSessionDescription(msg.sdp))
+          .then(() => flushCandidates())
           .catch(e => console.error('Set remote error:', e));
       }
       break;
     case 'ice-candidate':
-      if (pc && msg.candidate && pc.remoteDescription) {
-        pc.addIceCandidate(new RTCIceCandidate(msg.candidate)).catch(() => {});
+      if (pc && msg.candidate) {
+        if (pc.remoteDescription) {
+          pc.addIceCandidate(new RTCIceCandidate(msg.candidate)).catch(() => {});
+        } else {
+          pendingCandidates.push(msg.candidate);
+        }
       }
       break;
     case 'chat':
@@ -165,6 +172,13 @@ function addMsg(text, who) {
   d.textContent = text;
   $('messages').appendChild(d);
   $('messages').scrollTop = $('messages').scrollHeight;
+}
+
+function flushCandidates() {
+  while (pendingCandidates.length) {
+    const c = pendingCandidates.shift();
+    if (pc) pc.addIceCandidate(new RTCIceCandidate(c)).catch(() => {});
+  }
 }
 
 function sysMsg(text) {
