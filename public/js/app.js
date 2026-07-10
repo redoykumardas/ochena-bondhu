@@ -20,6 +20,11 @@ let permGranted = localStorage.getItem('ob_perm') === '1';
 let connTimeout = null;
 let searchMsgIndex = 0;
 let searchMsgTimer = null;
+let statsTimer = null;
+let callTimer = null;
+let callStartTime = null;
+let callTimerInterval = null;
+let lastMsgTime = 0;
 
 const searchMessages = [
   'Looking for someone nearby...',
@@ -35,10 +40,16 @@ function connect() {
   if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
   ws = new WebSocket(CONFIG.wsUrl);
   connecting = true;
+  const connMsg = $('conn-msg');
+  if (connMsg) connMsg.textContent = 'Connecting';
   connTimeout = setTimeout(() => {
     if (connecting) {
       const s = $('conn-msg');
-      if (s) s.textContent = 'Taking longer than usual. Make sure the server is running.';
+      if (s) {
+        s.innerHTML = 'Taking longer than usual. <a href="#" id="conn-retry" style="color:var(--primary)">Try again</a>';
+        const retry = $('conn-retry');
+        if (retry) retry.onclick = (e) => { e.preventDefault(); ws.close(); connect(); };
+      }
     }
   }, 10000);
   ws.onopen = () => {
@@ -192,22 +203,79 @@ function playSound(type) {
 }
 
 // ===== Screen / Modal system =====
+let transitioning = false;
+
 function show(name) {
+  if (transitioning) return;
   const landing = $('landing');
   const nav = $('navbar');
   const footer = $('footer');
 
-  // Show/hide fullscreen overlays
-  document.querySelectorAll('.fullscreen').forEach(el => {
-    el.classList.toggle('hidden', el.id !== name);
-  });
+  const fullscreenMap = { connecting: 'connecting', chat: 'chat', landing: 'landing' };
+  const targetId = fullscreenMap[name];
+  if (!targetId) return;
 
-  // Show landing when no fullscreen overlay
-  if (landing) {
-    landing.classList.toggle('hidden', name === 'chat' || name === 'connecting');
+  // Find current visible screen-fade element
+  const current = document.querySelector('.screen-fade.visible');
+  if (!current || current.id === targetId) {
+    // No transition needed — first load or same screen
+    document.querySelectorAll('.fullscreen').forEach(el => {
+      el.classList.toggle('hidden', el.id !== targetId);
+      if (el.id === targetId) { el.classList.remove('hidden'); el.classList.add('visible'); }
+      else { el.classList.remove('visible'); }
+    });
+    if (landing) {
+      landing.classList.toggle('hidden', name !== 'landing');
+      if (name === 'landing') landing.classList.add('visible');
+      else landing.classList.remove('visible');
+    }
+    if (nav) nav.classList.toggle('hidden', name === 'chat');
+    if (footer) footer.classList.toggle('hidden', name !== 'landing');
+    if (name === 'chat') { setStatus('searching'); startFindTimer(); startSearchMessages(); }
+    else { stopFindTimer(); }
+    return;
   }
-  if (nav) nav.classList.toggle('hidden', name === 'chat');
-  if (footer) footer.classList.toggle('hidden', name === 'chat' || name === 'connecting');
+
+  transitioning = true;
+
+  const finish = () => {
+    // Hide current
+    current.classList.add('hidden');
+    current.classList.remove('fade-out', 'visible');
+    // Show target
+    const target = $(targetId);
+    if (target) {
+      target.classList.remove('hidden');
+      target.classList.add('visible');
+    }
+    transitioning = false;
+  };
+
+  // Fade out current
+  if (current.id === 'landing' || current.id === 'connecting') {
+    current.classList.remove('visible');
+    current.classList.add('fade-out');
+  } else if (current.id === 'chat') {
+    current.classList.remove('visible');
+    current.classList.add('fade-out');
+  }
+
+  // Sync nav/landing/footer visibility with animation
+  if (targetId === 'chat') {
+    // Going to chat — hide landing elements
+    if (landing && !landing.classList.contains('hidden')) landing.classList.add('hidden');
+    if (nav && !nav.classList.contains('hidden')) nav.classList.add('hidden');
+    if (footer && !footer.classList.contains('hidden')) footer.classList.add('hidden');
+  } else if (name === 'landing') {
+    // Coming from chat to landing — show after transition
+    setTimeout(() => {
+      if (landing) landing.classList.remove('hidden');
+      if (nav) nav.classList.remove('hidden');
+      if (footer) footer.classList.remove('hidden');
+    }, 250);
+  }
+
+  setTimeout(finish, 220);
 
   if (name === 'chat') {
     setStatus('searching');
@@ -222,16 +290,20 @@ function openModal(step) {
   const overlay = $('modal-overlay');
   if (!overlay) return;
   overlay.classList.remove('hidden');
-  ['profile-step', 'perm-step', 'preview-step'].forEach(id => {
-    const el = $(id);
-    if (el) el.classList.toggle('hidden', id !== step + '-step');
+  let found = false;
+  document.querySelectorAll('#modal-overlay > .modal').forEach(el => {
+    const match = el.id === step + '-step';
+    el.classList.toggle('hidden', !match);
+    if (match) found = true;
   });
+  if (!found) overlay.classList.add('hidden');
 }
 
 function closeModal() {
   const overlay = $('modal-overlay');
   if (overlay) overlay.classList.add('hidden');
-  if (permStream) {
+  const settingsOpen = $('settings-step') && !$('settings-step').classList.contains('hidden');
+  if (!settingsOpen && permStream) {
     permStream.getTracks().forEach(t => t.stop());
     permStream = null;
   }
@@ -242,18 +314,24 @@ function handle(msg) {
   switch (msg.type) {
     case 'connected':
       userId = msg.userId;
-      if (!partnerId) {
-        if (!$('chat').classList.contains('hidden') && permGranted && findTimer) {
-          findPartner();
-          return;
-        }
-        show('landing');
-        const p = getProfile();
-        if (!p) {
-          openModal('profile');
-        } else if (!permGranted) {
-          openModal('perm');
-        }
+      if (partnerId) {
+        sysMsg('Connection lost. Tap Next to find someone new.');
+        cleanupPC();
+        $('status-text').textContent = 'Connection lost - tap Next';
+        $('chat-input').disabled = true;
+        $('send-btn').disabled = true;
+        return;
+      }
+      if (!$('chat').classList.contains('hidden') && permGranted && findTimer) {
+        findPartner();
+        return;
+      }
+      show('landing');
+      const p = getProfile();
+      if (!p) {
+        openModal('profile');
+      } else if (!permGranted) {
+        openModal('perm');
       }
       break;
     case 'waiting':
@@ -265,14 +343,29 @@ function handle(msg) {
       isInitiator = msg.initiator;
       show('chat');
       stopFindTimer();
-      $('status-text').textContent = 'Connecting...';
-      $('chat-input').disabled = false;
-      $('send-btn').disabled = false;
       const partnerName = msg.partnerName || 'a stranger';
       const partnerGender = msg.partnerGender || '';
       const label = partnerGender ? `${partnerName} (${partnerGender})` : partnerName;
-      sysMsg('Connected with ' + label);
-      startPeerConnection();
+      // Show match animation
+      const overlay = $('match-overlay');
+      if (overlay) {
+        overlay.querySelector('.match-name').textContent = label;
+        overlay.classList.remove('hidden');
+        setTimeout(() => {
+          overlay.classList.add('hidden');
+          $('status-text').textContent = 'Connecting...';
+          $('chat-input').disabled = false;
+          $('send-btn').disabled = false;
+          sysMsg('Connected with ' + label);
+          startPeerConnection();
+        }, 800);
+      } else {
+        $('status-text').textContent = 'Connecting...';
+        $('chat-input').disabled = false;
+        $('send-btn').disabled = false;
+        sysMsg('Connected with ' + label);
+        startPeerConnection();
+      }
       break;
     case 'offer':
       if (!pc) createPC(false);
@@ -326,11 +419,18 @@ function handle(msg) {
         el.textContent = `\u25CF ${count} online now`;
         el.style.color = count > 0 ? 'var(--success)' : 'var(--text-secondary)';
       }
+      const lc = $('live-count');
+      if (lc) lc.textContent = msg.count || 0;
       break;
   }
 }
 
 // ===== Media =====
+function getAudioConstraints() {
+  const enabled = localStorage.getItem('ob_noise') !== '0';
+  return enabled ? { noiseSuppression: true, echoCancellation: true } : true;
+}
+
 async function startLocalStream() {
   if (localStream) return localStream;
   if (!navigator.mediaDevices) throw new Error('Camera unavailable');
@@ -344,7 +444,7 @@ async function startLocalStream() {
     }
   }
   try {
-    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: getAudioConstraints() });
     return localStream;
   } catch (e) {
     if (e.name === 'NotAllowedError') throw new Error('Allow camera AND microphone in browser settings.');
@@ -397,15 +497,82 @@ function createPC() {
     $('enc-badge').classList.remove('hidden');
     $('status-text').textContent = 'Connected';
     setStatus('connected');
+    startCallTimer();
+    startQualityMonitor();
     playSound('connect');
     try { if (navigator.vibrate) navigator.vibrate([100, 50, 100]); } catch (_) {}
   };
   pc.oniceconnectionstatechange = () => {
+    const q = $('quality-indicator');
     if (pc.iceConnectionState === 'failed') {
       sysMsg('Connection failed. Tap Next.');
       playSound('error');
+      if (q) { q.textContent = '!'; q.style.color = 'var(--danger)'; }
+    } else if (pc.iceConnectionState === 'disconnected') {
+      if (q) { q.textContent = '!'; q.style.color = 'var(--danger)'; }
     }
   };
+}
+
+function startQualityMonitor() {
+  if (statsTimer) clearInterval(statsTimer);
+  statsTimer = setInterval(async () => {
+    if (!pc) return;
+    try {
+      const stats = await pc.getStats();
+      const q = $('quality-indicator');
+      if (!q) return;
+      let quality = 'good';
+      for (const report of stats.values()) {
+        if (report.type === 'candidate-pair' && report.state === 'succeeded') {
+          if (report.currentRoundTripTime > 0.3) quality = 'poor';
+          else if (report.currentRoundTripTime > 0.1) quality = 'fair';
+          else quality = 'good';
+          break;
+        }
+        if (report.type === 'inbound-rtp' && report.kind === 'video') {
+          if (report.framesPerSecond < 10) quality = 'poor';
+          else if (report.framesPerSecond < 20) quality = 'fair';
+        }
+      }
+      const labels = { good: 'Excellent', fair: 'Good', poor: 'Poor' };
+      const colors = { good: 'var(--success)', fair: 'var(--warning)', poor: 'var(--danger)' };
+      q.textContent = labels[quality];
+      q.style.color = colors[quality];
+    } catch (_) {}
+  }, 5000);
+}
+
+function stopQualityMonitor() {
+  if (statsTimer) { clearInterval(statsTimer); statsTimer = null; }
+  const q = $('quality-indicator');
+  if (q) q.textContent = '';
+}
+
+function startCallTimer() {
+  callStartTime = Date.now();
+  const el = $('call-timer');
+  if (el) {
+    updateCallTimer();
+    if (callTimerInterval) clearInterval(callTimerInterval);
+    callTimerInterval = setInterval(updateCallTimer, 1000);
+  }
+}
+
+function updateCallTimer() {
+  const el = $('call-timer');
+  if (!el || !callStartTime) return;
+  const sec = Math.floor((Date.now() - callStartTime) / 1000);
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  el.textContent = m + ':' + String(s).padStart(2, '0');
+}
+
+function stopCallTimer() {
+  if (callTimerInterval) { clearInterval(callTimerInterval); callTimerInterval = null; }
+  const el = $('call-timer');
+  if (el) el.textContent = '';
+  callStartTime = null;
 }
 
 function cleanupPC() {
@@ -415,6 +582,8 @@ function cleanupPC() {
   $('enc-badge').classList.add('hidden');
   $('status-text').textContent = 'Disconnected';
   setStatus('disconnected');
+  stopQualityMonitor();
+  stopCallTimer();
   playSound('disconnect');
   partnerId = null;
 }
@@ -520,7 +689,7 @@ $('perm-btn').addEventListener('click', async () => {
   try {
     if (permStream) permStream.getTracks().forEach(t => t.stop());
     try {
-      permStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      permStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: getAudioConstraints() });
     } catch (_) {
       permStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
     }
@@ -598,6 +767,45 @@ $('btn-cam').addEventListener('click', () => {
   if (t) { t.enabled = !t.enabled; $('btn-cam').classList.toggle('muted'); }
 });
 
+// Double-tap self video to flip camera
+let lastTapTime = 0;
+$('self-box').addEventListener('click', () => {
+  const now = Date.now();
+  if (now - lastTapTime < 400) {
+    // Double tap - flip camera
+    flipCamera();
+    lastTapTime = 0;
+  } else {
+    lastTapTime = now;
+  }
+});
+
+async function flipCamera() {
+  if (!localStream) return;
+  const curTrack = localStream.getVideoTracks()[0];
+  if (!curTrack) return;
+  const facing = curTrack.getSettings().facingMode;
+  const newFacing = facing === 'user' ? 'environment' : 'user';
+  try {
+    const newStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: newFacing }, audio: false });
+    const newTrack = newStream.getVideoTracks()[0];
+    if (pc) {
+      const sender = pc.getSenders().find(s => s.track?.kind === 'video');
+      if (sender) await sender.replaceTrack(newTrack);
+    }
+    localStream.removeTrack(curTrack);
+    curTrack.stop();
+    localStream.addTrack(newTrack);
+    $('self-video').srcObject = localStream;
+    $('preview-video').srcObject = localStream;
+    // Update perm preview too
+    if (permStream) {
+      permStream.getTracks().forEach(t => t.stop());
+      permStream = newStream;
+    }
+  } catch (_) {}
+}
+
 // Report
 $('btn-report').addEventListener('click', () => {
   $('report-overlay').classList.remove('hidden');
@@ -631,9 +839,58 @@ document.querySelectorAll('.report-opt').forEach(btn => {
 });
 
 $('btn-chat').addEventListener('click', openPanel);
+$('btn-settings').addEventListener('click', () => openModal('settings'));
+$('btn-share').addEventListener('click', () => {
+  const url = window.location.href;
+  if (navigator.share) {
+    navigator.share({ title: 'Ochena Bondhu', url }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(url).then(() => {
+      sysMsg('Link copied to clipboard');
+    }).catch(() => {});
+  }
+});
 $('close-panel').addEventListener('click', () => $('panel').classList.remove('open'));
+$('settings-close').addEventListener('click', closeModal);
+$('noise-toggle').addEventListener('change', () => {
+  localStorage.setItem('ob_noise', $('noise-toggle').checked ? '1' : '0');
+});
+$('dark-toggle').addEventListener('change', () => {
+  setTheme(!$('dark-toggle').checked);
+});
+// Load noise setting
+const noiseVal = localStorage.getItem('ob_noise');
+if (noiseVal === '0') $('noise-toggle').checked = false;
 $('panel').addEventListener('click', e => { if (e.target === $('panel')) $('panel').classList.remove('open'); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') $('panel').classList.remove('open'); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    $('panel').classList.remove('open');
+    $('report-overlay').classList.add('hidden');
+    $('report-status').classList.add('hidden');
+  }
+});
+
+// Keyboard shortcuts (only when no input focused)
+document.addEventListener('keydown', e => {
+  const tag = e.target.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+  if (e.repeat) return;
+  if ($('chat').classList.contains('hidden')) return;
+  switch (e.key.toLowerCase()) {
+    case 'n':
+      e.preventDefault();
+      if (!$('btn-next').disabled) $('btn-next').click();
+      break;
+    case 'm':
+      e.preventDefault();
+      $('btn-mic').click();
+      break;
+    case 'c':
+      e.preventDefault();
+      $('btn-cam').click();
+      break;
+  }
+});
 
 $('chat-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') sendMsg();
@@ -643,6 +900,9 @@ $('send-btn').addEventListener('click', sendMsg);
 function sendMsg() {
   const text = $('chat-input').value.trim();
   if (!text || !partnerId) return;
+  const now = Date.now();
+  if (now - lastMsgTime < 1000) return;
+  lastMsgTime = now;
   safeSend({ type: 'chat', text });
   addMsg(text, 'me');
   $('chat-input').value = '';
@@ -697,3 +957,36 @@ function openPanel() {
 }
 
 connect();
+
+// Step cards scroll animation
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15 });
+document.querySelectorAll('.step').forEach(el => observer.observe(el));
+
+// Theme toggle
+function setTheme(light) {
+  document.documentElement.classList.toggle('light', light);
+  localStorage.setItem('ob_theme', light ? 'light' : 'dark');
+  const sun = document.querySelector('.theme-toggle .sun');
+  const moon = document.querySelector('.theme-toggle .moon');
+  if (sun && moon) {
+    sun.classList.toggle('hidden', light);
+    moon.classList.toggle('hidden', !light);
+  }
+  const dt = $('dark-toggle');
+  if (dt) dt.checked = !light;
+}
+// Load saved theme
+const savedTheme = localStorage.getItem('ob_theme');
+if (savedTheme === 'light') setTheme(true);
+else setTheme(false);
+// Toggle button
+$('theme-btn').addEventListener('click', () => {
+  setTheme(!document.documentElement.classList.contains('light'));
+});
