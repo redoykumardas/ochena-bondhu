@@ -169,6 +169,7 @@ function createPC() {
       $('partner-video').srcObject = e.streams[0];
     }
     $('placeholder').classList.add('hidden');
+    $('enc-badge').classList.remove('hidden');
     $('status-text').textContent = 'Connected';
     playConnectSound();
   };
@@ -181,6 +182,7 @@ function cleanupPC() {
   if (pc) { pc.close(); pc = null; }
   $('partner-video').srcObject = null;
   $('placeholder').classList.remove('hidden');
+  $('enc-badge').classList.add('hidden');
   $('status-text').textContent = 'Disconnected';
   partnerId = null;
 }
@@ -275,6 +277,7 @@ $('start-btn').addEventListener('click', async () => {
   resetButtons();
   ws.send(JSON.stringify({ type: 'find' }));
   show('chat');
+  $('enc-badge').classList.add('hidden');
   $('status-text').textContent = 'Finding a partner...';
 });
 
