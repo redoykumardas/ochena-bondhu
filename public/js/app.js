@@ -55,7 +55,8 @@ function handle(msg) {
       if (!partnerId) {
     const p = getProfile();
     if (p) {
-      $('greeting').textContent = 'Welcome, ' + p.name + '! Tap below to start.';
+      const t = document.querySelector('.t-en');
+      if (t) t.textContent = 'Welcome, ' + p.name + '!';
       show('start');
     } else {
       show('profile');
@@ -287,7 +288,8 @@ $('profile-submit').addEventListener('click', () => {
   if (!name) { err.textContent = 'Please enter your name'; err.classList.remove('hidden'); return; }
   if (!is18) { err.textContent = 'You must be 18 or older to use this app'; err.classList.remove('hidden'); return; }
   setProfile({ name, gender });
-  $('greeting').textContent = 'Welcome, ' + name + '! Tap below to start.';
+  const t = document.querySelector('.t-en');
+  if (t) t.textContent = 'Welcome, ' + name + '!';
   show('start');
 });
 
