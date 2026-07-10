@@ -639,7 +639,7 @@ async function doStartSearch() {
   $('enc-badge').classList.add('hidden');
 }
 
-document.querySelectorAll('#start-btn, #hero-cta').forEach(btn => {
+document.querySelectorAll('#start-btn, #hero-cta, #hero-cta-2').forEach(btn => {
   btn.addEventListener('click', startButtonHandler);
 });
 
@@ -957,17 +957,6 @@ function openPanel() {
 }
 
 connect();
-
-// Step cards scroll animation
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-      observer.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.15 });
-document.querySelectorAll('.step').forEach(el => observer.observe(el));
 
 // Theme toggle
 function setTheme(light) {
