@@ -132,7 +132,7 @@ async function startPeerConnection() {
   createPC(isInitiator);
   if (isInitiator) {
     try {
-      const offer = await pc.createOffer({ offerToReceiveAudio: true, offerToReceiveVideo: true });
+      const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
       ws.send(JSON.stringify({ type: 'offer', sdp: pc.localDescription }));
     } catch (e) { sysMsg('Connection error - tap Next'); }
@@ -143,6 +143,8 @@ function createPC() {
   if (pc) pc.close();
   pc = new RTCPeerConnection({ iceServers: CONFIG.iceServers });
   localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+  if (!localStream.getAudioTracks().length) pc.addTransceiver('audio', { direction: 'recvonly' });
+  if (!localStream.getVideoTracks().length) pc.addTransceiver('video', { direction: 'recvonly' });
   pc.onicecandidate = e => { if (e.candidate) ws.send(JSON.stringify({ type: 'ice-candidate', candidate: e.candidate })); };
   pc.ontrack = e => {
     $('partner-video').srcObject = e.streams[0];
