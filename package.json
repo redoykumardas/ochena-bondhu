@@ -1,7 +1,7 @@
 {
-  "name": "ometv-clone",
+  "name": "ochena-bondhu",
   "version": "1.0.0",
-  "description": "OmeTV-like random video chat application",
+  "description": "Ochena Bondhu - Random video chat with strangers",
   "scripts": {
     "start": "node server/index.js",
     "dev": "node server/index.js",

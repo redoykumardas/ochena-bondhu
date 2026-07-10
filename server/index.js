@@ -141,7 +141,7 @@ const ip = getLocalIP();
 const httpServer = http.createServer(app);
 createWSServer(httpServer, 'HTTP');
 httpServer.listen(HTTP_PORT, HOST, () => {
-  console.log(`\nOmeTV Clone`);
+  console.log(`\nOchena Bondhu`);
   console.log(`──────────`);
   console.log(`HTTP  (PC):   http://localhost:${HTTP_PORT}`);
   console.log(`              http://${ip}:${HTTP_PORT}`);
