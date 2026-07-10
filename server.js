@@ -37,6 +37,7 @@ function handleMessage(ws, msg) {
       findPartner(ws); break;
     case 'offer': case 'answer': case 'ice-candidate': relay(ws, msg); break;
     case 'chat': relay(ws, msg); break;
+    case 'report': handleReport(ws, msg); break;
     case 'next': handleNext(ws); break;
     case 'stop': handleStop(ws); break;
   }
@@ -103,6 +104,12 @@ function handleDisconnect(ws) {
   cleanup(ws);
   const idx = waitingQueue.indexOf(ws);
   if (idx !== -1) waitingQueue.splice(idx, 1);
+}
+
+function handleReport(ws, msg) {
+  const partner = getPartner(ws);
+  console.log(`Report from ${ws.userId} against ${ws.partnerId || 'none'}: ${msg.reason}`);
+  ws.send(JSON.stringify({ type: 'report-ack' }));
 }
 
 function getPartner(ws) {
