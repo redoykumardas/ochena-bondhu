@@ -13,6 +13,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 const waitingQueue = [];
 const activePairs = new Map();
 
+function broadcastCount() {
+  const count = wss.clients.size;
+  for (const client of wss.clients) {
+    if (client.readyState === 1) {
+      client.send(JSON.stringify({ type: 'online-count', count }));
+    }
+  }
+}
+
 wss.on('connection', (ws) => {
   const userId = uuidv4();
   ws.userId = userId;
@@ -25,9 +34,13 @@ wss.on('connection', (ws) => {
     catch (e) { console.error('Invalid message:', e); }
   });
 
-  ws.send(JSON.stringify({ type: 'connected', userId }));
+  ws.on('close', () => {
+    handleDisconnect(ws);
+    broadcastCount();
+  });
 
-  ws.on('close', () => handleDisconnect(ws));
+  ws.send(JSON.stringify({ type: 'connected', userId }));
+  broadcastCount();
 });
 
 function handleMessage(ws, msg) {
@@ -44,7 +57,7 @@ function handleMessage(ws, msg) {
 }
 
 function findPartner(ws) {
-  if (ws.partnerId) return;
+  if (ws.partnerId || ws.inQueue) return;
   if (waitingQueue.length > 0) {
     const partner = waitingQueue.shift();
     partner.inQueue = false;
@@ -55,12 +68,15 @@ function findPartner(ws) {
 
     const myInfo = ws.profile || {};
     const partnerInfo = partner.profile || {};
+    console.log(`MATCH: ${ws.userId.slice(0,6)} (${myInfo.name||'?'}) <-> ${partner.userId.slice(0,6)} (${partnerInfo.name||'?'})`);
+
     ws.send(JSON.stringify({ type: 'matched', partnerId: partner.userId, initiator: true, partnerName: partnerInfo.name || 'a stranger', partnerGender: partnerInfo.gender || '' }));
     partner.send(JSON.stringify({ type: 'matched', partnerId: ws.userId, initiator: false, partnerName: myInfo.name || 'a stranger', partnerGender: myInfo.gender || '' }));
   } else {
     ws.inQueue = true;
     waitingQueue.push(ws);
     ws.send(JSON.stringify({ type: 'waiting' }));
+    console.log(`QUEUE: ${ws.userId.slice(0,6)} waiting (total in queue: ${waitingQueue.length})`);
   }
 }
 
@@ -75,17 +91,33 @@ function relay(ws, msg) {
 }
 
 function handleNext(ws) {
-  const partner = getPartner(ws);
-  if (partner && partner.readyState === 1) {
-    partner.send(JSON.stringify({ type: 'partner-left' }));
-    partner.partnerId = null;
+  if (ws.partnerId) {
+    const partner = getPartner(ws);
+    if (partner && partner.readyState === 1) {
+      partner.send(JSON.stringify({ type: 'partner-left' }));
+      partner.partnerId = null;
+    }
+    cleanup(ws);
   }
-  cleanup(ws);
+  if (ws.inQueue) {
+    const idx = waitingQueue.indexOf(ws);
+    if (idx !== -1) waitingQueue.splice(idx, 1);
+    ws.inQueue = false;
+  }
   ws.send(JSON.stringify({ type: 'disconnected' }));
+  console.log(`NEXT: ${ws.userId.slice(0,6)} looking for new partner`);
   findPartner(ws);
 }
 
 function handleStop(ws) {
+  if (ws.inQueue) {
+    const idx = waitingQueue.indexOf(ws);
+    if (idx !== -1) waitingQueue.splice(idx, 1);
+    ws.inQueue = false;
+    ws.send(JSON.stringify({ type: 'disconnected' }));
+    console.log(`STOP from queue: ${ws.userId.slice(0,6)} removed`);
+    return;
+  }
   const partner = getPartner(ws);
   if (partner && partner.readyState === 1) {
     partner.send(JSON.stringify({ type: 'partner-left' }));
@@ -93,17 +125,22 @@ function handleStop(ws) {
   }
   cleanup(ws);
   ws.send(JSON.stringify({ type: 'disconnected' }));
+  console.log(`STOP: ${ws.userId.slice(0,6)} left`);
 }
 
 function handleDisconnect(ws) {
+  if (ws.inQueue) {
+    const idx = waitingQueue.indexOf(ws);
+    if (idx !== -1) waitingQueue.splice(idx, 1);
+    console.log(`DISCONNECT from queue: ${ws.userId.slice(0,6)} removed`);
+  }
   const partner = getPartner(ws);
   if (partner && partner.readyState === 1) {
     partner.send(JSON.stringify({ type: 'partner-left' }));
     partner.partnerId = null;
+    console.log(`DISCONNECT: ${ws.userId.slice(0,6)} left, notifying ${partner.userId.slice(0,6)}`);
   }
   cleanup(ws);
-  const idx = waitingQueue.indexOf(ws);
-  if (idx !== -1) waitingQueue.splice(idx, 1);
 }
 
 function handleReport(ws, msg) {

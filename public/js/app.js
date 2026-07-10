@@ -253,6 +253,10 @@ function handle(msg) {
     case 'disconnected':
       cleanupPC();
       break;
+    case 'online-count':
+      const el = $('online-count');
+      if (el) el.textContent = `🟢 ${msg.count} online now`;
+      break;
   }
 }
 
