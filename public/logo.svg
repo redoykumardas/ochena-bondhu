@@ -1,0 +1,15 @@
+<svg width="400" height="280" viewBox="0 0 400 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6c5ce7"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+  </defs>
+  <rect x="135" y="40" width="130" height="96" rx="28" fill="url(#lg)"/>
+  <circle cx="200" cy="88" r="30" fill="white" fill-opacity="0.2"/>
+  <circle cx="200" cy="88" r="20" fill="white"/>
+  <circle cx="204" cy="84" r="7" fill="white" fill-opacity="0.5"/>
+  <rect x="184" y="50" width="32" height="7" rx="3.5" fill="white" fill-opacity="0.45"/>
+  <text x="200" y="200" text-anchor="middle" fill="#eee" font-family="'Noto Sans Bengali','Segoe UI',sans-serif" font-weight="700" font-size="44">অচেনা বন্ধু</text>
+  <text x="200" y="228" text-anchor="middle" fill="#888" font-family="'Segoe UI',sans-serif" font-weight="400" font-size="16" letter-spacing="3">OCHENA BONDHU</text>
+</svg>

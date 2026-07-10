@@ -38,6 +38,8 @@ body {
 /* ===== Connecting ===== */
 #connecting { gap: 16px; }
 
+.connecting-logo { width: 60px; height: auto; opacity: 0.6; }
+
 .spinner {
   width: 40px; height: 40px;
   border: 3px solid var(--border);
@@ -62,7 +64,9 @@ body {
   padding: 32px 24px;
 }
 
-.profile-title { font-size: 22px; text-align: center; font-weight: 700; }
+.profile-title { font-size: 22px; text-align: center; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; }
+
+.profile-logo { width: 40px; height: auto; }
 .profile-sub { color: var(--text2); font-size: 14px; text-align: center; margin-bottom: 4px; }
 
 .field { display: flex; flex-direction: column; gap: 5px; }
@@ -97,9 +101,9 @@ body {
 /* ===== Start Screen ===== */
 #start { gap: 0; }
 
-.logo {
-  margin-bottom: 4px;
-}
+.logo { display: flex; flex-direction: column; align-items: center; margin-bottom: 4px; }
+
+.logo-img { width: 80px; height: auto; margin-bottom: -4px; }
 
 .logo h1 {
   font-size: 28px;

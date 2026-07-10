@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Ochena Bondhu</title>
+  <title>Ochena Bondhu — অচেনা বন্ধু</title>
+  <link rel="icon" type="image/svg+xml" href="logo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -11,13 +12,17 @@
 </head>
 <body>
   <div id="connecting" class="screen">
+    <img src="logo.svg" alt="Ochena Bondhu" class="connecting-logo">
     <div class="spinner"></div>
     <div>Connecting...</div>
   </div>
 
   <div id="profile" class="screen hidden">
     <div class="profile-box">
-      <h1 class="profile-title">Ochena Bondhu</h1>
+      <h1 class="profile-title">
+        <img src="logo.svg" alt="Ochena Bondhu" class="profile-logo">
+        অচেনা বন্ধু
+      </h1>
       <p class="profile-sub">Tell us a bit about yourself</p>
       <div class="field">
         <label for="profile-name">Your Name</label>
@@ -41,7 +46,10 @@
   </div>
 
   <div id="start" class="screen hidden">
-    <div class="logo"><h1>Ochena Bondhu</h1></div>
+    <div class="logo">
+      <img src="logo.svg" alt="Ochena Bondhu" class="logo-img">
+      <h1>অচেনা বন্ধু</h1>
+    </div>
     <div class="subtitle" id="greeting">Find new friends, start a conversation</div>
     <p id="start-error" class="error-msg hidden"></p>
     <button id="start-btn" class="btn-primary">Start Chatting</button>
