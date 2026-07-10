@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Video Chat</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="connecting" class="screen">
+    <div class="spinner"></div>
+    <div>Connecting...</div>
+  </div>
+
+  <div id="start" class="screen hidden">
+    <div class="logo"><h1>Video Chat</h1></div>
+    <div class="subtitle">Talk to strangers via video chat</div>
+    <p id="start-error" class="error-msg hidden"></p>
+    <button id="start-btn" class="btn-primary">Start Chatting</button>
+    <div class="camera-preview" style="position:relative">
+      <video id="local-preview" autoplay muted playsinline></video>
+      <span class="preview-label">Your camera</span>
+    </div>
+  </div>
+
+  <div id="chat" class="screen hidden">
+    <div id="partner-box">
+      <video id="partner-video" autoplay playsinline></video>
+      <div id="placeholder" class="hidden">
+        <svg viewBox="0 0 80 80" fill="none">
+          <circle cx="40" cy="28" r="14" fill="currentColor" opacity="0.6"/>
+          <path d="M16 68c0-14 10.8-24 24-24s24 10 24 24" stroke="currentColor" stroke-width="3" fill="none" opacity="0.6"/>
+        </svg>
+        <div id="status-text">Finding a partner...</div>
+      </div>
+    </div>
+
+    <div id="self-box">
+      <video id="self-video" autoplay muted playsinline></video>
+      <span id="self-label">You</span>
+    </div>
+
+    <div id="controls">
+      <button id="btn-next" class="ctrl" title="Next">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>
+        <span>Next</span>
+      </button>
+      <button id="btn-mic" class="ctrl" title="Mic">
+        <svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
+          <path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
+        </svg>
+        <svg class="off hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
+          <path d="M19 10v2a7 7 0 01-4.5 6.5"/><line x1="1" y1="1" x2="23" y2="23"/><path d="M12 19v4M8 23h8"/>
+        </svg>
+        <span>Mic</span>
+      </button>
+      <button id="btn-cam" class="ctrl" title="Camera">
+        <svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" stroke="currentColor" fill="none"/>
+        </svg>
+        <svg class="off hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" stroke="currentColor" fill="none"/>
+          <line x1="1" y1="1" x2="23" y2="23"/>
+        </svg>
+        <span>Cam</span>
+      </button>
+      <button id="btn-chat" class="ctrl" title="Chat" style="position:relative">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        <span>Chat</span>
+        <span id="chat-badge" class="hidden"></span>
+      </button>
+      <button id="btn-stop" class="ctrl danger" title="Stop">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h12v12H6z"/></svg>
+        <span>Stop</span>
+      </button>
+    </div>
+
+    <div id="panel">
+      <div id="panel-header">
+        <span>Chat</span>
+        <button id="close-panel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      </div>
+      <div id="messages"></div>
+      <div id="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Message..." disabled>
+        <button id="send-btn" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

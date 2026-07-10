@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html><head><title>Camera Test</title>
+<style>body{font-family:monospace;background:#111;color:#fff;padding:20px}button{padding:10px 20px;font-size:16px;cursor:pointer}#log{white-space:pre-wrap;margin-top:16px;color:#0f0}video{margin-top:12px;width:320px;height:240px;background:#333;border-radius:8px}.err{color:#f55}</style>
+</head><body>
+<h2>Camera Diagnostics</h2>
+<button onclick="testCamera()">Test Camera</button>
+<div id="log"></div>
+<video id="preview" autoplay muted playsinline></video>
+<script>
+function log(msg, cls) {
+  const d = document.getElementById('log');
+  d.innerHTML += (cls||'') + '> ' + msg + '\n';
+  d.scrollTop = d.scrollHeight;
+}
+async function testCamera() {
+  document.getElementById('log').innerHTML = '';
+  log('Testing camera access...');
+  
+  // Check 1: mediaDevices
+  if (!navigator.mediaDevices) {
+    log('FAIL: navigator.mediaDevices is undefined', 'err');
+    log('This browser blocks camera on insecure (HTTP) pages.', 'err');
+    log('Use HTTPS or localhost.', 'err');
+    return;
+  }
+  log('PASS: navigator.mediaDevices available');
+  
+  // Check 2: enumerate devices
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    log('Found ' + devices.length + ' devices:');
+    for (const d of devices) {
+      log('  ' + d.kind + ': ' + (d.label || '(no label)') + ' [id: ' + d.deviceId.slice(0,20) + '...]');
+    }
+    const cams = devices.filter(d => d.kind === 'videoinput');
+    if (cams.length === 0) log('WARNING: No video input devices found!', 'err');
+    else log('Found ' + cams.length + ' camera(s)');
+  } catch(e) {
+    log('FAIL: enumerateDevices error: ' + e.message, 'err');
+  }
+  
+  // Check 3: getUserMedia
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+    log('PASS: getUserMedia succeeded!');
+    document.getElementById('preview').srcObject = stream;
+    log('Camera preview shown below.');
+  } catch(e) {
+    log('FAIL: getUserMedia error: ' + e.name + ' - ' + e.message, 'err');
+    if (e.name === 'NotFoundError') log('No camera device found by the browser.', 'err');
+    else if (e.name === 'NotAllowedError') log('Permission denied. Check browser settings.', 'err');
+    else if (e.name === 'NotReadableError') log('Camera busy or inaccessible.', 'err');
+  }
+}
+</script>
+</body></html>
