@@ -33,6 +33,14 @@ function connect() {
   };
 }
 
+function getProfile() {
+  try { return JSON.parse(localStorage.getItem('ob_profile')); } catch { return null; }
+}
+
+function setProfile(data) {
+  localStorage.setItem('ob_profile', JSON.stringify(data));
+}
+
 function stopLocalStream() {
   if (localStream) {
     localStream.getTracks().forEach(t => t.stop());
@@ -44,7 +52,15 @@ function handle(msg) {
   switch (msg.type) {
     case 'connected':
       userId = msg.userId;
-      if (!partnerId) show('start');
+      if (!partnerId) {
+    const p = getProfile();
+    if (p) {
+      $('greeting').textContent = 'Welcome, ' + p.name + '! Tap below to start.';
+      show('start');
+    } else {
+      show('profile');
+    }
+  }
       break;
     case 'waiting':
       $('status-text').textContent = 'Waiting for a partner...';
@@ -188,7 +204,7 @@ function cleanupPC() {
 }
 
 function show(name) {
-  ['connecting','start','chat'].forEach(id => $(id).classList.toggle('hidden', id !== name));
+  ['connecting','profile','start','chat'].forEach(id => $(id).classList.toggle('hidden', id !== name));
 }
 
 function playConnectSound() {
@@ -259,6 +275,19 @@ function openPanel() {
 }
 
 // Events
+$('profile-submit').addEventListener('click', () => {
+  const name = $('profile-name').value.trim();
+  const gender = $('profile-gender').value;
+  const is18 = $('profile-18').checked;
+  const err = $('profile-error');
+  err.classList.add('hidden');
+  if (!name) { err.textContent = 'Please enter your name'; err.classList.remove('hidden'); return; }
+  if (!is18) { err.textContent = 'You must be 18 or older to use this app'; err.classList.remove('hidden'); return; }
+  setProfile({ name, gender });
+  $('greeting').textContent = 'Welcome, ' + name + '! Tap below to start.';
+  show('start');
+});
+
 $('start-btn').addEventListener('click', async () => {
   $('start-btn').textContent = 'Starting...';
   $('start-error').classList.add('hidden');

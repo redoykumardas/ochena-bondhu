@@ -12,9 +12,34 @@
     <div>Connecting...</div>
   </div>
 
+  <div id="profile" class="screen hidden">
+    <div class="profile-box">
+      <h1 class="profile-title">Ochena Bondhu</h1>
+      <p class="profile-sub">Tell us a bit about yourself</p>
+      <div class="field">
+        <label for="profile-name">Your Name</label>
+        <input type="text" id="profile-name" placeholder="Enter your name" maxlength="30">
+      </div>
+      <div class="field">
+        <label for="profile-gender">Gender</label>
+        <select id="profile-gender">
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <label class="age-check">
+        <input type="checkbox" id="profile-18">
+        <span>I am 18 years or older</span>
+      </label>
+      <p id="profile-error" class="error-msg hidden"></p>
+      <button id="profile-submit" class="btn-primary">Continue</button>
+    </div>
+  </div>
+
   <div id="start" class="screen hidden">
     <div class="logo"><h1>Ochena Bondhu</h1></div>
-    <div class="subtitle">Find new friends, start a conversation</div>
+    <div class="subtitle" id="greeting">Find new friends, start a conversation</div>
     <p id="start-error" class="error-msg hidden"></p>
     <button id="start-btn" class="btn-primary">Start Chatting</button>
     <div class="camera-preview" style="position:relative">
