@@ -18,6 +18,15 @@ let findTimer = null;
 let noOneTimer = null;
 let permGranted = localStorage.getItem('ob_perm') === '1';
 let connTimeout = null;
+let searchMsgIndex = 0;
+let searchMsgTimer = null;
+
+const searchMessages = [
+  'Looking for someone nearby...',
+  'Finding the best match...',
+  'Checking connection quality...',
+  'Almost ready...'
+];
 
 const $ = id => document.getElementById(id);
 
@@ -122,17 +131,31 @@ function startFindTimer() {
   if (findTimer) clearInterval(findTimer);
   findTimer = setInterval(updateWaitTime, 1000);
   if (noOneTimer) clearTimeout(noOneTimer);
-  noOneTimer = setTimeout(() => {
-    sysMsg('No one online right now. Keep waiting or tap Next to try again.');
-  }, 15000);
+  noOneTimer = setTimeout(showEmptyState, 20000);
 }
 
 function stopFindTimer() {
   if (findTimer) { clearInterval(findTimer); findTimer = null; }
   if (noOneTimer) { clearTimeout(noOneTimer); noOneTimer = null; }
+  if (searchMsgTimer) { clearInterval(searchMsgTimer); searchMsgTimer = null; }
   $('status-wait').textContent = '';
   $('btn-cancel-find').classList.add('hidden');
   findStartTime = null;
+}
+
+function startSearchMessages() {
+  searchMsgIndex = 0;
+  $('status-text').textContent = searchMessages[0];
+  if (searchMsgTimer) clearInterval(searchMsgTimer);
+  searchMsgTimer = setInterval(() => {
+    searchMsgIndex = (searchMsgIndex + 1) % searchMessages.length;
+    $('status-text').textContent = searchMessages[searchMsgIndex];
+  }, 3000);
+}
+
+function showEmptyState() {
+  $('status-text').innerHTML = 'No one is available right now.<br>More people usually join during the evening.';
+  $('btn-cancel-find').textContent = 'Try Again';
 }
 
 // Sound effects
@@ -168,25 +191,68 @@ function playSound(type) {
   } catch (_) {}
 }
 
+// ===== Screen / Modal system =====
+function show(name) {
+  const landing = $('landing');
+  const nav = $('navbar');
+  const footer = $('footer');
+
+  // Show/hide fullscreen overlays
+  document.querySelectorAll('.fullscreen').forEach(el => {
+    el.classList.toggle('hidden', el.id !== name);
+  });
+
+  // Show landing when no fullscreen overlay
+  if (landing) {
+    landing.classList.toggle('hidden', name === 'chat' || name === 'connecting');
+  }
+  if (nav) nav.classList.toggle('hidden', name === 'chat');
+  if (footer) footer.classList.toggle('hidden', name === 'chat' || name === 'connecting');
+
+  if (name === 'chat') {
+    setStatus('searching');
+    startFindTimer();
+    startSearchMessages();
+  } else {
+    stopFindTimer();
+  }
+}
+
+function openModal(step) {
+  const overlay = $('modal-overlay');
+  if (!overlay) return;
+  overlay.classList.remove('hidden');
+  ['profile-step', 'perm-step', 'preview-step'].forEach(id => {
+    const el = $(id);
+    if (el) el.classList.toggle('hidden', id !== step + '-step');
+  });
+}
+
+function closeModal() {
+  const overlay = $('modal-overlay');
+  if (overlay) overlay.classList.add('hidden');
+  if (permStream) {
+    permStream.getTracks().forEach(t => t.stop());
+    permStream = null;
+  }
+}
+
+// ===== Handler =====
 function handle(msg) {
   switch (msg.type) {
     case 'connected':
       userId = msg.userId;
       if (!partnerId) {
-        // if we were on chat screen still searching, reconnect find
         if (!$('chat').classList.contains('hidden') && permGranted && findTimer) {
           findPartner();
           return;
         }
+        show('landing');
         const p = getProfile();
-        if (p && permGranted) {
-          const t = document.querySelector('.hero-tag');
-          if (t) t.textContent = 'Welcome back, ' + p.name;
-          show('start');
+        if (!p) {
+          openModal('profile');
         } else if (!permGranted) {
-          show('perm');
-        } else {
-          show('profile');
+          openModal('perm');
         }
       }
       break;
@@ -255,11 +321,16 @@ function handle(msg) {
       break;
     case 'online-count':
       const el = $('online-count');
-      if (el) el.textContent = `🟢 ${msg.count} online now`;
+      if (el) {
+        const count = msg.count;
+        el.textContent = `\u25CF ${count} online now`;
+        el.style.color = count > 0 ? 'var(--success)' : 'var(--text-secondary)';
+      }
       break;
   }
 }
 
+// ===== Media =====
 async function startLocalStream() {
   if (localStream) return localStream;
   if (!navigator.mediaDevices) throw new Error('Camera unavailable');
@@ -348,27 +419,100 @@ function cleanupPC() {
   partnerId = null;
 }
 
-function show(name) {
-  ['connecting','profile','start','chat','perm'].forEach(id => {
-    const el = $(id);
-    if (el) el.classList.toggle('hidden', id !== name);
-  });
-  if (name === 'chat') {
-    setStatus('searching');
-    startFindTimer();
+// ===== Navbar scroll =====
+let navScrolled = false;
+const landingEl = $('landing');
+if (landingEl) {
+  landingEl.addEventListener('scroll', () => {
+    const nav = $('navbar');
+    if (!nav) return;
+    const shouldScroll = landingEl.scrollTop > 50;
+    if (shouldScroll !== navScrolled) {
+      navScrolled = shouldScroll;
+      nav.classList.toggle('scrolled', shouldScroll);
+    }
+  }, { passive: true });
+}
+
+// ===== Events =====
+let permStream = null;
+
+// Modal backdrop close
+$('modal-overlay').addEventListener('click', e => {
+  if (e.target === $('modal-overlay')) closeModal();
+});
+
+// Start button (navbar & hero)
+function startButtonHandler() {
+  const p = getProfile();
+  if (p && permGranted) {
+    doStartSearch();
+  } else if (!p) {
+    openModal('profile');
   } else {
-    stopFindTimer();
-  }
-  // stop perm preview when leaving perm screen
-  if (name !== 'perm' && permStream) {
-    permStream.getTracks().forEach(t => t.stop());
-    permStream = null;
+    openModal('perm');
   }
 }
 
-// Events
-let permStream = null;
+async function doStartSearch() {
+  try {
+    await startLocalStream();
+  } catch (e) {
+    const errEl = $('start-error');
+    if (errEl) { errEl.textContent = '\u26A0 ' + e.message; errEl.classList.remove('hidden'); }
+    return;
+  }
+  clearMsgs();
+  resetButtons();
+  closeModal();
+  findPartner();
+  show('chat');
+  $('enc-badge').classList.add('hidden');
+}
 
+document.querySelectorAll('#start-btn, #hero-cta').forEach(btn => {
+  btn.addEventListener('click', startButtonHandler);
+});
+
+// Profile submit
+$('profile-submit').addEventListener('click', () => {
+  const name = $('profile-name').value.trim();
+  const age = $('profile-age').value.trim();
+  const gender = $('profile-gender').value;
+  const is18 = $('profile-18').checked;
+  const err = $('profile-error');
+  err.classList.add('hidden');
+  if (!name) { err.textContent = 'Please enter your name'; err.classList.remove('hidden'); return; }
+  if (!age || isNaN(age) || parseInt(age) < 13 || parseInt(age) > 120) { err.textContent = 'Please enter a valid age'; err.classList.remove('hidden'); return; }
+  if (!is18) { err.textContent = 'You must be 18 or older to use this app'; err.classList.remove('hidden'); return; }
+  setProfile({ name, age: parseInt(age), gender });
+  if (permGranted) {
+    showPreviewStep();
+  } else {
+    openModal('perm');
+  }
+});
+
+function showPreviewStep() {
+  openModal('preview');
+  const p = getProfile();
+  if (p) {
+    $('preview-name').textContent = p.name;
+    $('preview-age').textContent = p.age;
+    $('preview-gender').textContent = p.gender;
+  }
+  // Start camera preview
+  if (!permStream) {
+    (async () => {
+      try {
+        permStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        $('preview-video').srcObject = permStream;
+      } catch (_) {}
+    })();
+  }
+}
+
+// Permission button
 $('perm-btn').addEventListener('click', async () => {
   $('perm-error').classList.add('hidden');
   $('perm-btn').textContent = 'Requesting...';
@@ -380,21 +524,11 @@ $('perm-btn').addEventListener('click', async () => {
     } catch (_) {
       permStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
     }
-    $('perm-video').srcObject = permStream;
     localStorage.setItem('ob_perm', '1');
     permGranted = true;
     const hasAudio = permStream.getAudioTracks().length > 0;
-    $('perm-btn').textContent = hasAudio ? '✅ Access Granted' : '✅ Camera Access Granted (no mic)';
-    setTimeout(() => {
-      const p = getProfile();
-      if (p) {
-        const t = document.querySelector('.hero-tag');
-        if (t) t.textContent = 'Welcome back, ' + p.name;
-        show('start');
-      } else {
-        show('profile');
-      }
-    }, 600);
+    $('perm-btn').textContent = hasAudio ? '\u2705 Access Granted' : '\u2705 Camera Access Granted (no mic)';
+    setTimeout(showPreviewStep, 600);
   } catch (e) {
     const errEl = $('perm-error');
     if (e.name === 'NotAllowedError') {
@@ -410,45 +544,27 @@ $('perm-btn').addEventListener('click', async () => {
   }
 });
 
-$('profile-submit').addEventListener('click', () => {
-  const name = $('profile-name').value.trim();
-  const gender = $('profile-gender').value;
-  const is18 = $('profile-18').checked;
-  const err = $('profile-error');
-  err.classList.add('hidden');
-  if (!name) { err.textContent = 'Please enter your name'; err.classList.remove('hidden'); return; }
-  if (!is18) { err.textContent = 'You must be 18 or older to use this app'; err.classList.remove('hidden'); return; }
-  setProfile({ name, gender });
-  const t = document.querySelector('.hero-tag');
-  if (t) t.textContent = 'Welcome, ' + name;
-  show('start');
-});
-
-$('start-btn').addEventListener('click', async () => {
-  $('start-btn').textContent = 'Starting...';
-  $('start-error').classList.add('hidden');
-  try {
-    await startLocalStream();
-    $('local-preview').srcObject = localStream;
-  } catch (e) {
-    $('start-error').textContent = '⚠ ' + e.message;
-    $('start-error').classList.remove('hidden');
-    $('start-btn').textContent = 'Start Chatting';
-    return;
+// Preview start
+$('preview-start').addEventListener('click', async () => {
+  $('preview-start').textContent = 'Searching...';
+  $('preview-start').disabled = true;
+  // Stop perm preview
+  if (permStream) {
+    permStream.getTracks().forEach(t => t.stop());
+    permStream = null;
   }
-  clearMsgs();
-  resetButtons();
-  findPartner();
-  show('chat');
-  $('enc-badge').classList.add('hidden');
-  $('status-text').textContent = 'Finding a partner...';
+  await doStartSearch();
+  $('preview-start').textContent = 'Start Searching';
+  $('preview-start').disabled = false;
 });
 
+// Cancel find
 $('btn-cancel-find').addEventListener('click', () => {
   cleanupPC();
   safeSend({ type: 'stop' });
   stopLocalStream();
-  show('start');
+  show('landing');
+  $('btn-cancel-find').textContent = 'Cancel';
   $('chat-input').disabled = true;
   $('send-btn').disabled = true;
   resetButtons();
@@ -458,13 +574,15 @@ $('btn-next').addEventListener('click', () => {
   cleanupPC();
   safeSend({ type: 'next' });
   $('status-text').textContent = 'Finding new partner...';
+  startFindTimer();
+  startSearchMessages();
 });
 
 $('btn-stop').addEventListener('click', () => {
   cleanupPC();
   safeSend({ type: 'stop' });
   stopLocalStream();
-  show('start');
+  show('landing');
   $('chat-input').disabled = true;
   $('send-btn').disabled = true;
   resetButtons();
@@ -502,7 +620,7 @@ document.querySelectorAll('.report-opt').forEach(btn => {
     const reason = btn.dataset.reason;
     safeSend({ type: 'report', reason });
     $('report-status').textContent = 'Report submitted. Thank you.';
-    $('report-status').style.color = '#30d158';
+    $('report-status').style.color = '#22C55E';
     $('report-status').classList.remove('hidden');
     setTimeout(() => {
       $('report-overlay').classList.add('hidden');
