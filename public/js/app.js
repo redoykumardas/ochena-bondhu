@@ -17,6 +17,7 @@ let findStartTime = null;
 let findTimer = null;
 let noOneTimer = null;
 let permGranted = localStorage.getItem('ob_perm') === '1';
+let connTimeout = null;
 
 const $ = id => document.getElementById(id);
 
@@ -25,14 +26,31 @@ function connect() {
   if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
   ws = new WebSocket(CONFIG.wsUrl);
   connecting = true;
-  show('connecting');
-  ws.onopen = () => { connecting = false; };
-  ws.onmessage = e => handle(JSON.parse(e.data));
-  ws.onclose = () => {
+  connTimeout = setTimeout(() => {
+    if (connecting) {
+      const s = $('conn-msg');
+      if (s) s.textContent = 'Taking longer than usual. Make sure the server is running.';
+    }
+  }, 10000);
+  ws.onopen = () => {
     connecting = false;
+    if (connTimeout) { clearTimeout(connTimeout); connTimeout = null; }
+  };
+  ws.onmessage = e => handle(JSON.parse(e.data));
+  ws.onclose = (e) => {
+    connecting = false;
+    if (connTimeout) { clearTimeout(connTimeout); connTimeout = null; }
     if (document.visibilityState !== 'hidden') {
+      if (e.code !== 1000) {
+        const m = $('conn-msg');
+        if (m) m.textContent = e.code === 1006 ? 'Server unreachable. Retrying...' : 'Disconnected. Reconnecting...';
+      }
       reconnectTimer = setTimeout(connect, 3000);
     }
+  };
+  ws.onerror = () => {
+    const m = $('conn-msg');
+    if (m) m.textContent = 'Connection error. Retrying...';
   };
 }
 
@@ -155,8 +173,8 @@ function handle(msg) {
     case 'connected':
       userId = msg.userId;
       if (!partnerId) {
-        // if we were on chat screen searching, reconnect find
-        if (!$('chat').classList.contains('hidden') && permGranted) {
+        // if we were on chat screen still searching, reconnect find
+        if (!$('chat').classList.contains('hidden') && permGranted && findTimer) {
           findPartner();
           return;
         }
@@ -180,6 +198,7 @@ function handle(msg) {
       partnerId = msg.partnerId;
       isInitiator = msg.initiator;
       show('chat');
+      stopFindTimer();
       $('status-text').textContent = 'Connecting...';
       $('chat-input').disabled = false;
       $('send-btn').disabled = false;
@@ -195,7 +214,7 @@ function handle(msg) {
         pc.setRemoteDescription(new RTCSessionDescription(msg.sdp))
           .then(() => { flushCandidates(); return pc.createAnswer(); })
           .then(a => pc.setLocalDescription(a))
-          .then(() => ws.send(JSON.stringify({ type: 'answer', sdp: pc.localDescription })))
+          .then(() => safeSend({ type: 'answer', sdp: pc.localDescription }))
           .catch(e => console.error('Answer error:', e));
       }
       break;
@@ -276,7 +295,7 @@ async function startPeerConnection() {
     try {
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
-      ws.send(JSON.stringify({ type: 'offer', sdp: pc.localDescription }));
+      safeSend({ type: 'offer', sdp: pc.localDescription });
     } catch (e) { sysMsg('Connection error - tap Next'); }
   }
 }
@@ -287,7 +306,7 @@ function createPC() {
   localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
   if (!localStream.getAudioTracks().length) pc.addTransceiver('audio', { direction: 'recvonly' });
   if (!localStream.getVideoTracks().length) pc.addTransceiver('video', { direction: 'recvonly' });
-  pc.onicecandidate = e => { if (e.candidate) ws.send(JSON.stringify({ type: 'ice-candidate', candidate: e.candidate })); };
+  pc.onicecandidate = e => { if (e.candidate) safeSend({ type: 'ice-candidate', candidate: e.candidate }); };
   pc.ontrack = e => {
     if (e.track.kind === 'audio') {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -423,7 +442,7 @@ $('start-btn').addEventListener('click', async () => {
 
 $('btn-cancel-find').addEventListener('click', () => {
   cleanupPC();
-  ws.send(JSON.stringify({ type: 'stop' }));
+  safeSend({ type: 'stop' });
   stopLocalStream();
   show('start');
   $('chat-input').disabled = true;
@@ -433,13 +452,13 @@ $('btn-cancel-find').addEventListener('click', () => {
 
 $('btn-next').addEventListener('click', () => {
   cleanupPC();
-  ws.send(JSON.stringify({ type: 'next' }));
+  safeSend({ type: 'next' });
   $('status-text').textContent = 'Finding new partner...';
 });
 
 $('btn-stop').addEventListener('click', () => {
   cleanupPC();
-  ws.send(JSON.stringify({ type: 'stop' }));
+  safeSend({ type: 'stop' });
   stopLocalStream();
   show('start');
   $('chat-input').disabled = true;
@@ -477,7 +496,7 @@ $('report-overlay').addEventListener('click', e => {
 document.querySelectorAll('.report-opt').forEach(btn => {
   btn.addEventListener('click', () => {
     const reason = btn.dataset.reason;
-    ws.send(JSON.stringify({ type: 'report', reason }));
+    safeSend({ type: 'report', reason });
     $('report-status').textContent = 'Report submitted. Thank you.';
     $('report-status').style.color = '#30d158';
     $('report-status').classList.remove('hidden');
@@ -502,7 +521,7 @@ $('send-btn').addEventListener('click', sendMsg);
 function sendMsg() {
   const text = $('chat-input').value.trim();
   if (!text || !partnerId) return;
-  ws.send(JSON.stringify({ type: 'chat', text }));
+  safeSend({ type: 'chat', text });
   addMsg(text, 'me');
   $('chat-input').value = '';
 }
