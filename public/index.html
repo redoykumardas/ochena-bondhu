@@ -3,45 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Ochena Bondhu — অচেনা বন্ধু</title>
+  <title>Ochena Bondhu</title>
   <link rel="icon" type="image/svg+xml" href="logo.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <div id="connecting" class="screen">
-    <svg class="connecting-art" viewBox="0 0 200 160" fill="none">
-      <circle cx="70" cy="60" r="28" stroke="#30d158" stroke-width="3" fill="none" opacity="0.8"/>
-      <circle cx="130" cy="60" r="28" stroke="#64d2ff" stroke-width="3" fill="none" opacity="0.8"/>
-      <circle cx="62" cy="52" r="4" fill="#30d158" opacity="0.6"/>
-      <circle cx="78" cy="52" r="4" fill="#30d158" opacity="0.6"/>
-      <circle cx="122" cy="52" r="4" fill="#64d2ff" opacity="0.6"/>
-      <circle cx="138" cy="52" r="4" fill="#64d2ff" opacity="0.6"/>
-      <path d="M70 72 Q70 90 100 90 Q130 90 130 72" stroke="#888" stroke-width="2" fill="none" stroke-dasharray="4 3" class="smile-left"/>
-      <path d="M100 100 L100 130" stroke="#30d158" stroke-width="2" opacity="0.4" stroke-dasharray="3 3"/>
-      <path d="M100 130 Q85 125 75 135" stroke="#64d2ff" stroke-width="1.5" opacity="0.5"/>
-      <path d="M100 130 Q115 125 125 135" stroke="#30d158" stroke-width="1.5" opacity="0.5"/>
-      <g class="pulse-dots">
-        <circle cx="100" cy="20" r="2" fill="#30d158" opacity="0.6"/>
-        <circle cx="100" cy="12" r="1.5" fill="#64d2ff" opacity="0.4"/>
-      </g>
-    </svg>
-    <img src="logo.svg" alt="Ochena Bondhu" class="connecting-logo">
-    <div class="connecting-text" id="connecting-text">Finding your অচেনা বন্ধু...</div>
-    <div class="connecting-quote" id="cquote">Someone is waiting to meet you</div>
+    <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+    <img src="logo.svg" alt="" class="connecting-logo">
+    <p>Connecting</p>
   </div>
 
   <div id="profile" class="screen hidden">
-    <div class="profile-box">
-      <h1 class="profile-title">
-        <img src="logo.svg" alt="Ochena Bondhu" class="profile-logo">
-        অচেনা বন্ধু
-      </h1>
-      <p class="profile-sub">Tell us a bit about yourself</p>
+    <div class="card">
+      <img src="logo.svg" alt="" class="card-logo">
+      <h1>অচেনা বন্ধু</h1>
+      <p class="card-sub">Join the conversation</p>
       <div class="field">
-        <label for="profile-name">Your Name</label>
+        <label for="profile-name">Name</label>
         <input type="text" id="profile-name" placeholder="Enter your name" maxlength="30">
       </div>
       <div class="field">
@@ -52,46 +31,35 @@
           <option value="other">Other</option>
         </select>
       </div>
-      <label class="age-check">
+      <label class="check">
         <input type="checkbox" id="profile-18">
-        <span>I am 18 years or older</span>
+        I am 18 years or older
       </label>
-      <p id="profile-error" class="error-msg hidden"></p>
-      <button id="profile-submit" class="btn-primary">Continue</button>
+      <p id="profile-error" class="err hidden"></p>
+      <button id="profile-submit">Continue</button>
     </div>
   </div>
 
   <div id="start" class="screen hidden">
-    <div class="logo">
-      <img src="logo.svg" alt="Ochena Bondhu" class="logo-img">
+    <div class="hero">
+      <img src="logo.svg" alt="" class="hero-logo">
       <h1>অচেনা বন্ধু</h1>
-      <span class="logo-sub">OCHENA BONDHU</span>
+      <p class="hero-sub">Ochena Bondhu</p>
+      <p class="hero-tag">Talk to strangers. Make friends.</p>
+      <p id="start-error" class="err hidden"></p>
+      <button id="start-btn">Start Chatting</button>
+      <div class="preview">
+        <video id="local-preview" autoplay muted playsinline></video>
+        <span>Your camera</span>
+      </div>
     </div>
-    <p class="t-bn">অচেনার সাথে কথা বলুন, বন্ধু হোন</p>
-    <p class="t-en">Talk to strangers. Make friends.</p>
-    <div class="pills">
-      <span class="pill">🎥 Video Call</span>
-      <span class="pill">🔒 Encrypted</span>
-      <span class="pill">⚡ Instant</span>
-      <span class="pill">🌏 Free</span>
-    </div>
-    <div class="camera-preview">
-      <video id="local-preview" autoplay muted playsinline></video>
-      <span class="preview-label">📷 Your camera</span>
-    </div>
-    <p id="start-error" class="error-msg hidden"></p>
-    <button id="start-btn" class="btn-primary">শুরু করুন &nbsp; Start Chatting</button>
-    <p class="safety">18+ only · Be respectful · Report abuse</p>
   </div>
 
   <div id="chat" class="screen hidden">
     <div id="partner-box">
       <video id="partner-video" autoplay playsinline></video>
       <div id="enc-badge" class="hidden">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-          <path d="M7 11V7a5 5 0 0110 0v4"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
         End-to-end encrypted
       </div>
       <div id="placeholder" class="hidden">
@@ -119,24 +87,13 @@
         <span>Next</span>
       </button>
       <button id="btn-mic" class="ctrl" title="Mic">
-        <svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
-          <path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
-        </svg>
-        <svg class="off hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
-          <path d="M19 10v2a7 7 0 01-4.5 6.5"/><line x1="1" y1="1" x2="23" y2="23"/><path d="M12 19v4M8 23h8"/>
-        </svg>
+        <svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        <svg class="off hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-4.5 6.5"/><line x1="1" y1="1" x2="23" y2="23"/><path d="M12 19v4M8 23h8"/></svg>
         <span>Mic</span>
       </button>
       <button id="btn-cam" class="ctrl" title="Camera">
-        <svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" stroke="currentColor" fill="none"/>
-        </svg>
-        <svg class="off hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" stroke="currentColor" fill="none"/>
-          <line x1="1" y1="1" x2="23" y2="23"/>
-        </svg>
+        <svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" stroke="currentColor" fill="none"/></svg>
+        <svg class="off hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" stroke="currentColor" fill="none"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
         <span>Cam</span>
       </button>
       <button id="btn-chat" class="ctrl" title="Chat" style="position:relative">

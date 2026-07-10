@@ -16,25 +16,6 @@ let connecting = false;
 
 const $ = id => document.getElementById(id);
 
-const quotes = [
-  'Someone is waiting to meet you',
-  'যার সাথে কথা বলবেন, সে আসছে',
-  'New friends are just a click away',
-  'দুই অচেনা, এক বন্ধন',
-  'Strangers are just friends you haven\'t met',
-  'আপনার পরবর্তী বন্ধু অপেক্ষা করছে',
-  'The best connections start here',
-];
-
-let quoteIdx = 0;
-setInterval(() => {
-  const el = document.getElementById('cquote');
-  if (el) {
-    quoteIdx = (quoteIdx + 1) % quotes.length;
-    el.textContent = quotes[quoteIdx];
-  }
-}, 4000);
-
 function connect() {
   if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) return;
   if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
@@ -74,8 +55,8 @@ function handle(msg) {
       if (!partnerId) {
     const p = getProfile();
     if (p) {
-      const t = document.querySelector('.t-en');
-      if (t) t.textContent = 'Welcome, ' + p.name + '!';
+      const t = document.querySelector('.hero-tag');
+      if (t) t.textContent = 'Welcome back, ' + p.name;
       show('start');
     } else {
       show('profile');
@@ -292,8 +273,8 @@ $('profile-submit').addEventListener('click', () => {
   if (!name) { err.textContent = 'Please enter your name'; err.classList.remove('hidden'); return; }
   if (!is18) { err.textContent = 'You must be 18 or older to use this app'; err.classList.remove('hidden'); return; }
   setProfile({ name, gender });
-  const t = document.querySelector('.t-en');
-  if (t) t.textContent = 'Welcome, ' + name + '!';
+  const t = document.querySelector('.hero-tag');
+  if (t) t.textContent = 'Welcome, ' + name;
   show('start');
 });
 
