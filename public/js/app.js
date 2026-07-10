@@ -158,7 +158,16 @@ function createPC() {
   if (!localStream.getVideoTracks().length) pc.addTransceiver('video', { direction: 'recvonly' });
   pc.onicecandidate = e => { if (e.candidate) ws.send(JSON.stringify({ type: 'ice-candidate', candidate: e.candidate })); };
   pc.ontrack = e => {
-    $('partner-video').srcObject = e.streams[0];
+    if (e.track.kind === 'audio') {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const src = ctx.createMediaStreamSource(e.streams[0]);
+      const gain = ctx.createGain();
+      gain.gain.value = 3.0;
+      src.connect(gain);
+      gain.connect(ctx.destination);
+    } else {
+      $('partner-video').srcObject = e.streams[0];
+    }
     $('placeholder').classList.add('hidden');
     $('status-text').textContent = 'Connected';
   };
