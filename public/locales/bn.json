@@ -1,0 +1,237 @@
+{
+  "page_title": "Ochena Bondhu — অচেনা মানুষ, নতুন গল্প",
+  "nav": {
+    "brand": "Ochena Bondhu",
+    "journey": "Journey",
+    "features": "Features",
+    "safety": "Safety",
+    "theme_tooltip": "Toggle theme",
+    "cta": "শুরু করুন →"
+  },
+  "hero": {
+    "label": "অচেনা বন্ধু",
+    "title": "<span class=\"highlight-bn\">অচেনা মানুষ,</span><br>নতুন গল্প।",
+    "title_highlight": "অচেনা মানুষ,",
+    "title_rest": "নতুন গল্প।",
+    "desc": "হাজারো মানুষের মধ্যে হয়তো একজন আপনার অপেক্ষায় আছে। শুরু করুন নতুন কারও সাথে কথা বলা।",
+    "cta": "শুরু করুন →",
+    "story_link": "গল্পটি দেখুন ↓",
+    "badge_no_reg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><polyline points=\"22 4 12 14.01 9 11.01\"/></svg> কোনো রেজিস্ট্রেশন নেই",
+    "badge_anon": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z\"/></svg> বেনামী",
+    "badge_free": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M12 1v3M20 12h3M4 12H1M5.64 5.64l2.12 2.12M16.24 16.24l2.12 2.12\"/><circle cx=\"12\" cy=\"12\" r=\"10\"/></svg> বিনামূল্যে",
+    "badge_instant": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><polyline points=\"13 2 3 14 12 14 11 22 21 10 12 10 13 2\"/></svg> তাৎক্ষণিক",
+    "online_label": "অনলাইনে আছেন"
+  },
+  "journey": {
+    "label": "একা থেকে সংযোগ",
+    "title": "একটি সাধারণ \"হ্যালো\" দিয়ে<br><span class=\"highlight\">সবকিছু বদলে যেতে পারে।</span>",
+    "step1": "একা একজন মানুষ",
+    "step2": "মোবাইল হাতে",
+    "step3": "সংযোগ পাওয়া গেছে",
+    "step4": "নতুন বন্ধু"
+  },
+  "evolution": {
+    "label": "যোগাযোগের বিবর্তন",
+    "title": "চিঠি থেকে ভিডিও কল—<br><span class=\"highlight\">যোগাযোগ বদলিয়েছে, প্রয়োজন একই।</span>",
+    "year_1800": "১৮০০",
+    "name_letter": "চিঠি",
+    "year_1900": "১৯০০",
+    "name_phone": "টেলিফোন",
+    "year_2000": "২০০০",
+    "name_internet": "ইন্টারনেট",
+    "year_2020": "২০২০",
+    "name_video": "ভিডিও কল",
+    "year_today": "আজ",
+    "name_current": "Ochena Bondhu"
+  },
+  "world": {
+    "label": "পৃথিবীর সাথে সংযোগ",
+    "title": "পৃথিবীটা আসলে <span class=\"highlight\">খুব ছোট।</span>",
+    "bd": "বাংলাদেশ",
+    "japan": "জাপান",
+    "germany": "জার্মানি",
+    "india": "ভারত",
+    "brazil": "ব্রাজিল"
+  },
+  "chat_preview": {
+    "label": "লাইভ চ্যাট",
+    "title": "একটি কথোপকথন <span class=\"highlight\">সবকিছু বদলে দিতে পারে।</span>",
+    "name": "অচেনা বন্ধু",
+    "status": "অনলাইন",
+    "msg1": "হ্যালো!",
+    "msg2": "হাই 👋",
+    "msg3": "কেমন আছেন?",
+    "msg4": "ভালো 😊 আপনার দেশ কোথায়?",
+    "msg5": "বাংলাদেশ 🇧🇩"
+  },
+  "features": {
+    "label": "কেন Ochena Bondhu",
+    "title": "নতুন বন্ধুত্বের জন্য <span class=\"highlight\">সেরা জায়গা</span>",
+    "anonymous_title": "বেনামী",
+    "anonymous_desc": "কোনো নাম, ইমেইল বা ব্যক্তিগত তথ্য নেই। আপনার পরিচয় সম্পূর্ণ নিরাপদ।",
+    "video_title": "ভিডিও চ্যাট",
+    "video_desc": "রিয়েল-টাইম ভিডিও কল। এন্ড-টু-এন্ড এনক্রিপ্টেড।",
+    "safe_title": "নিরাপদ",
+    "safe_desc": "এন্ড-টু-এন্ড এনক্রিপ্টেড ভিডিও। আপনার কথোপকথন শুধু আপনার এবং আপনার বন্ধুর মধ্যে সীমাবদ্ধ।",
+    "global_title": "বিশ্বব্যাপী",
+    "global_desc": "পৃথিবীর যেকোনো প্রান্ত থেকে নতুন মানুষের সাথে সংযোগ করুন। সীমা নেই।",
+    "fast_title": "দ্রুত সংযোগ",
+    "fast_desc": "সেকেন্ডের মধ্যে ম্যাচ। কোনো অপেক্ষা নয়, সরাসরি শুরু করুন।"
+  },
+  "feeling": {
+    "title": "সবচেয়ে সুন্দর বন্ধুত্বগুলো<br>শুরু হয় একটি সাধারণ<br><span class=\"highlight\">\"হ্যালো\"</span> দিয়ে।"
+  },
+  "safety": {
+    "label": "নিরাপত্তা",
+    "title": "আপনার নিরাপত্তা <span class=\"highlight\">আমাদের অগ্রাধিকার</span>",
+    "ai_moderation": "এআই মডারেশন",
+    "encrypted": "এন্ড-টু-এন্ড এনক্রিপ্টেড",
+    "instant_block": "তাৎক্ষণিক ব্লক",
+    "easy_report": "সহজ রিপোর্টিং",
+    "age_18": "শুধুমাত্র ১৮+"
+  },
+  "cta": {
+    "title": "হয়তো আপনার পরবর্তী বন্ধুটি<br><span class=\"highlight\">এখনই অপেক্ষা করছে।</span>",
+    "desc": "হাজারো মানুষ অনলাইনে আছেন। শুরু করুন নতুন কারও সাথে কথা বলা।",
+    "btn": "শুরু করুন →"
+  },
+  "footer": {
+    "brand": "Ochena Bondhu",
+    "desc": "অচেনা মানুষের সাথে নতুন গল্প তৈরি করুন। একটি নিরাপদ ও বেনামী ভিডিও চ্যাট প্ল্যাটফর্ম।",
+    "links_heading": "লিংক",
+    "privacy": "প্রাইভেসি পলিসি",
+    "terms": "শর্তাবলী",
+    "safety_link": "নিরাপত্তা",
+    "coming_soon": "শীঘ্রই আসছে",
+    "google_play": "গুগল প্লে",
+    "app_store": "অ্যাপ স্টোর",
+    "copyright": "বাংলাদেশের ভালোবাসায় তৈরি &copy; ২০২৬"
+  },
+  "overlay": {
+    "connecting": "সংযুক্ত হচ্ছে",
+    "timeout": "স্বাভাবিকের চেয়ে বেশি সময় লাগছে। <a href=\"#\" id=\"conn-retry\" style=\"color:var(--primary)\">পুনরায় চেষ্টা করুন</a>",
+    "server_unreachable": "সার্ভার অফলাইন। পুনরায় চেষ্টা করছে...",
+    "disconnected_reconnect": "সংযোগ বিচ্ছিন্ন। পুনরায় সংযোগ হচ্ছে...",
+    "conn_error": "সংযোগে সমস্যা। পুনরায় চেষ্টা করছে..."
+  },
+  "modal": {
+    "welcome_title": "স্বাগতম",
+    "welcome_sub": "আপনাকে সংযুক্ত করি।",
+    "name_label": "নাম",
+    "name_placeholder": "আপনার নাম লিখুন",
+    "age_label": "বয়স",
+    "age_placeholder": "আপনার বয়স",
+    "gender_label": "লিঙ্গ",
+    "gender_male": "পুরুষ",
+    "gender_female": "নারী",
+    "gender_other": "অন্যান্য",
+    "age_consent": "আমার বয়স ১৮ বছর বা তার বেশি",
+    "continue_btn": "এগিয়ে যান",
+    "perm_title": "ক্যামেরা ও মাইক্রোফোন",
+    "perm_sub": "আপনার ক্যামেরা এবং মাইক্রোফোন অ্যাক্সেস প্রয়োজন যাতে আপনি অন্যদের সাথে কথা বলতে পারেন। কিছুই রেকর্ড করা হয় না।",
+    "perm_btn": "ক্যামেরা অনুমতি দিন",
+    "preview_btn": "খোঁজা শুরু করুন",
+    "settings_title": "সেটিংস",
+    "noise_label": "নয়েজ কমানো",
+    "noise_desc": "কল চলাকালীন ব্যাকগ্রাউন্ডের শব্দ কমায়",
+    "shortcuts_label": "কীবোর্ড শর্টকাট",
+    "shortcuts_hint": "<kbd>N</kbd> পরবর্তী &middot; <kbd>M</kbd> মাইক &middot; <kbd>C</kbd> ক্যাম",
+    "dark_label": "ডার্ক থিম",
+    "close_btn": "বন্ধ করুন"
+  },
+  "chat": {
+    "searching": "খুঁজছে",
+    "cancel": "বাতিল",
+    "connected": "সংযুক্ত",
+    "e2e": "এন্ড-টু-এন্ড এনক্রিপ্টেড",
+    "finding": "পার্টনার খুঁজছে...",
+    "tap_hint": "যেকোনো সময় Next ট্যাপ করে স্কিপ করুন",
+    "you": "আপনি",
+    "next": "পরবর্তী",
+    "mic": "মাইক",
+    "cam": "ক্যামেরা",
+    "report": "রিপোর্ট",
+    "chat": "চ্যাট",
+    "settings": "সেটিংস",
+    "share": "শেয়ার",
+    "stop": "স্টপ",
+    "panel_title": "চ্যাট",
+    "msg_placeholder": "মেসেজ...",
+    "report_title": "ইউজার রিপোর্ট করুন",
+    "report_spam": "স্প্যাম",
+    "report_harassment": "হাইরেসমেন্ট",
+    "report_nudity": "অশ্লীলতা",
+    "report_fake_cam": "ভুয়া ক্যামেরা",
+    "report_other": "অন্যান্য",
+    "match_connected": "সংযুক্ত",
+    "connecting": "সংযুক্ত হচ্ছে..."
+  },
+  "status": {
+    "searching": "খুঁজছে",
+    "connected": "সংযুক্ত",
+    "disconnected": "সংযোগ বিচ্ছিন্ন",
+    "finding": "পার্টনার খুঁজছে...",
+    "waiting": "পার্টনারের অপেক্ষায়...",
+    "connecting_ellipsis": "সংযুক্ত হচ্ছে...",
+    "partner_left": "পার্টনার চলে গেছে - Next ট্যাপ করুন",
+    "conn_lost_tap": "সংযোগ বিচ্ছিন্ন - Next ট্যাপ করুন",
+    "camera_error": "ক্যামেরা ত্রুটি",
+    "conn_error_tap": "সংযোগ ত্রুটি - Next ট্যাপ করুন",
+    "finding_new": "নতুন পার্টনার খুঁজছে...",
+    "empty_title": "এই মুহূর্তে কেউ উপলব্ধ নেই।<br>সন্ধ্যার সময় বেশি মানুষ যুক্ত হয়।",
+    "try_again": "পুনরায় চেষ্টা করুন",
+    "no_camera": "ক্যামেরা পাওয়া যায়নি",
+    "conn_failed": "সংযোগ ব্যর্থ হয়েছে। Next ট্যাপ করুন।"
+  },
+  "sys": {
+    "conn_lost_reconnect": "সংযোগ বিচ্ছিন্ন। পুনরায় সংযোগ হচ্ছে...",
+    "conn_lost_next": "সংযোগ বিচ্ছিন্ন। নতুন কাউকে খুঁজতে Next ট্যাপ করুন।",
+    "partner_disconnected": "পার্টনার সংযোগ বিচ্ছিন্ন",
+    "no_mic_video": "মাইক পাওয়া যায়নি — শুধু ভিডিও",
+    "mic_unavailable": "মাইক উপলব্ধ নয় — শুধু ভিডিও",
+    "camera_settings": "ব্রাউজার সেটিংসে ক্যামেরা এবং মাইক্রোফোন অনুমতি দিন।",
+    "report_submitted": "রিপোর্ট জমা দেওয়া হয়েছে। ধন্যবাদ।",
+    "link_copied": "লিঙ্ক ক্লিপবোর্ডে কপি করা হয়েছে",
+    "a_stranger": "একজন অপরিচিত",
+    "connected_with": "{label} এর সাথে সংযুক্ত",
+    "share_title": "Ochena Bondhu"
+  },
+  "perm": {
+    "requesting": "অনুরোধ করা হচ্ছে...",
+    "granted": "✅ অ্যাক্সেস মঞ্জুর করা হয়েছে",
+    "granted_no_mic": "✅ ক্যামেরা অ্যাক্সেস মঞ্জুর (মাইক নেই)",
+    "blocked": "ক্যামেরা ব্লক করা হয়েছে। দয়া করে ব্রাউজার অ্যাড্রেস বারে ক্যামেরা আইকনে ক্লিক করে অ্যাক্সেস অনুমতি দিন, তারপর আবার চেষ্টা করুন।",
+    "not_found": "ক্যামেরা পাওয়া যায়নি। একটি ক্যামেরা সংযুক্ত করুন এবং আবার চেষ্টা করুন।",
+    "failed": "ক্যামেরা অ্যাক্সেস ব্যর্থ: {msg}",
+    "try_again": "পুনরায় চেষ্টা করুন"
+  },
+  "search": {
+    "msg1": "কাছের কাউকে খুঁজছে...",
+    "msg2": "সেরা ম্যাচ খুঁজছে...",
+    "msg3": "সংযোগের গুণমান পরীক্ষা করছে...",
+    "msg4": "প্রায় প্রস্তুত...",
+    "btn_searching": "খুঁজছে...",
+    "btn_start": "খোঁজা শুরু করুন"
+  },
+  "quality": {
+    "excellent": "চমৎকার",
+    "good": "ভাল",
+    "poor": "খারাপ"
+  },
+  "validation": {
+    "name_required": "অনুগ্রহ করে আপনার নাম লিখুন",
+    "valid_age": "অনুগ্রহ করে একটি বৈধ বয়স লিখুন",
+    "age_consent": "এই অ্যাপ ব্যবহার করতে আপনার বয়স ১৮ বা তার বেশি হতে হবে"
+  },
+  "errors": {
+    "prefix": "⚠ "
+  },
+  "online": {
+    "now": "● {count} জন অনলাইনে",
+    "people": "{count} জন মানুষ অনলাইনে"
+  },
+  "lang": {
+    "bn": "বাংলা",
+    "en": "EN"
+  }
+}

@@ -1,61 +1,64 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
+  <script>(function(){var l=localStorage.getItem('ob_lang');if(l==='en'){document.documentElement.lang='en'}})()</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Ochena Bondhu — অচেনা মানুষ, নতুন গল্প</title>
+  <title data-i18n="page_title">Ochena Bondhu — অচেনা মানুষ, নতুন গল্প</title>
   <link rel="icon" type="image/svg+xml" href="logo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="preload" as="style" href="css/style.css" fetchpriority="high">
+  <link rel="stylesheet" href="css/style.css" fetchpriority="high">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&family=Noto+Sans+Bengali:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&family=Noto+Sans+Bengali:wght@500;600;700&display=swap" onload="this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&family=Noto+Sans+Bengali:wght@500;600;700&display=swap"></noscript>
 </head>
 <body>
   <!-- Navbar -->
   <nav id="navbar">
     <div class="nav-inner">
       <a href="#" class="nav-logo">
-        <img src="logo.svg" alt="" width="40" height="40">
-        <span>Ochena Bondhu</span>
+        <img src="logo.svg" alt="" width="100" height="70">
+        <span data-i18n="nav.brand">Ochena Bondhu</span>
       </a>
       <div class="nav-links">
-        <a href="#connection">Journey</a>
-        <a href="#features">Features</a>
-        <a href="#safety">Safety</a>
+        <a href="#journey" data-i18n="nav.journey">Journey</a>
+        <a href="#features" data-i18n="nav.features">Features</a>
+        <a href="#safety" data-i18n="nav.safety">Safety</a>
       </div>
-      <button id="theme-btn" class="theme-toggle" title="Toggle theme">
-        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-        <svg class="moon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-      </button>
-      <button id="start-btn" class="nav-cta">শুরু করুন &rarr;</button>
+      <div class="nav-actions">
+        <div class="lang-switch">
+          <button class="lang-btn" data-lang="bn" data-i18n="lang.bn">বাংলা</button>
+          <button class="lang-btn" data-lang="en" data-i18n="lang.en">EN</button>
+        </div>
+        <button id="theme-btn" class="theme-toggle" title="Toggle theme" data-i18n-title="nav.theme_tooltip">
+          <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <svg class="moon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        </button>
+        <button id="start-btn" class="nav-cta" data-i18n="nav.cta">শুরু করুন &rarr;</button>
+      </div>
     </div>
   </nav>
 
   <!-- Landing Page -->
   <main id="landing" class="hidden screen-fade">
-    <!-- Red Thread SVG (continuous narrative line) -->
-    <svg class="red-thread" viewBox="0 0 100 10000" preserveAspectRatio="none" aria-hidden="true">
-      <path class="thread-path" d="M50 0 C50 200, 80 400, 50 600 C20 800, 50 1000, 50 1200 C50 1400, 30 1600, 50 1800 C70 2000, 50 2200, 50 2400 C50 2600, 80 2800, 50 3000 C20 3200, 50 3400, 50 3600 C50 3800, 30 4000, 50 4200 C70 4400, 50 4600, 50 4800 C50 5000, 80 5200, 50 5400 C20 5600, 50 5800, 50 6000 C50 6200, 30 6400, 50 6600 C70 6800, 50 7000, 50 7200 C50 7400, 80 7600, 50 7800 C20 8000, 50 8200, 50 8400 C50 8600, 50 8800, 50 9000 C50 9200, 50 9400, 50 9600" fill="none" stroke="#4F46E5" stroke-width="0.8" opacity="0.2"/>
-    </svg>
+    <div class="landing-bg"></div>
 
     <!-- Hero -->
     <section id="hero">
-      <div class="stars-bg"></div>
-      <div class="constellation-bg"></div>
-      <div class="hero-glow"></div>
       <div class="hero-inner">
         <div class="hero-text">
-          <div class="hero-tagline">OCHENA BONDHU</div>
-          <h1>Every Stranger<br><span class="highlight">Has A Story.</span></h1>
-          <p class="hero-desc">Meet real people across the world through simple, private video conversations. No signup. No data stored. Just real connection.</p>
+          <div class="hero-label" data-i18n="hero.label">Ochena Bondhu</div>
+          <h1><span class="highlight" data-i18n="hero.title_highlight">অচেনা মানুষ,</span><br><span data-i18n="hero.title_rest">নতুন গল্প।</span></h1>
+          <p class="hero-desc" data-i18n="hero.desc">হাজারো মানুষের মধ্যে হয়তো একজন আপনার অপেক্ষায় আছে।</p>
           <div class="hero-actions">
-            <button id="hero-cta" class="hero-btn">Start Chat &rarr;</button>
-            <a href="#connection" class="hero-link">Explore the journey &darr;</a>
+            <button id="hero-cta" class="hero-btn" data-i18n="hero.cta">শুরু করুন &rarr;</button>
           </div>
           <div class="hero-badges">
-            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 4 12 14.01 9 11.01"/></svg> No registration</span>
-            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Anonymous</span>
-            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v3M20 12h3M4 12H1M5.64 5.64l2.12 2.12M16.24 16.24l2.12 2.12"/><circle cx="12" cy="12" r="10"/></svg> Free</span>
+            <span class="badge-pill" data-i18n="hero.badge_anon">বেনামী</span>
+            <span class="badge-pill" data-i18n="hero.badge_free">বিনামূল্যে</span>
+            <span class="badge-pill" data-i18n="hero.badge_instant">তাৎক্ষণিক</span>
           </div>
           <div class="hero-stats">
             <p id="online-count" class="hero-status"></p>
@@ -63,298 +66,58 @@
           </div>
         </div>
         <div class="hero-visual">
-          <!-- Globe Illustration -->
-          <div class="globe-art">
-            <svg viewBox="0 0 280 280" fill="none">
-              <circle cx="140" cy="140" r="90" stroke="#4F46E5" stroke-width="0.6" opacity="0.15"/>
-              <circle cx="140" cy="140" r="80" stroke="#4F46E5" stroke-width="0.5" opacity="0.12"/>
-              <ellipse cx="140" cy="140" rx="90" ry="35" stroke="#4F46E5" stroke-width="0.5" opacity="0.1" transform="rotate(0 140 140)"/>
-              <ellipse cx="140" cy="140" rx="90" ry="35" stroke="#4F46E5" stroke-width="0.5" opacity="0.1" transform="rotate(30 140 140)"/>
-              <ellipse cx="140" cy="140" rx="90" ry="35" stroke="#4F46E5" stroke-width="0.5" opacity="0.1" transform="rotate(-30 140 140)"/>
-              <path d="M140 50 A90 90 0 0 1 230 140" stroke="#4F46E5" stroke-width="0.4" opacity="0.08"/>
-              <path d="M140 50 A90 90 0 0 0 50 140" stroke="#4F46E5" stroke-width="0.4" opacity="0.08"/>
-              <circle cx="140" cy="140" r="3" fill="#4F46E5" opacity="0.4"/>
-              <!-- Connection arcs -->
-              <path d="M90 100 Q140 60 190 100" stroke="#06B6D4" stroke-width="0.6" opacity="0.2" fill="none"/>
-              <path d="M95 160 Q140 200 185 160" stroke="#06B6D4" stroke-width="0.6" opacity="0.15" fill="none"/>
-              <path d="M70 120 Q140 90 210 120" stroke="#06B6D4" stroke-width="0.6" opacity="0.12" fill="none"/>
-              <!-- Glowing nodes -->
-              <circle cx="90" cy="100" r="2" fill="#06B6D4" opacity="0.3"><animate attributeName="opacity" values="0.3;0.8;0.3" dur="3s" repeatCount="indefinite"/></circle>
-              <circle cx="190" cy="100" r="2" fill="#06B6D4" opacity="0.3"><animate attributeName="opacity" values="0.3;0.8;0.3" dur="3.5s" repeatCount="indefinite"/></circle>
-              <circle cx="95" cy="160" r="2" fill="#06B6D4" opacity="0.3"><animate attributeName="opacity" values="0.3;0.8;0.3" dur="4s" repeatCount="indefinite"/></circle>
-              <circle cx="185" cy="160" r="2" fill="#06B6D4" opacity="0.3"><animate attributeName="opacity" values="0.3;0.8;0.3" dur="2.8s" repeatCount="indefinite"/></circle>
-            </svg>
-          </div>
-          <!-- Two strangers illustration -->
-          <div class="strangers-art">
-            <div class="stranger stranger-left">
-              <div class="stranger-head"></div>
-              <div class="stranger-body"></div>
+          <div class="hero-card">
+            <div class="hero-card-top">
+              <div class="hero-card-dots"><span></span><span></span><span></span></div>
             </div>
-            <div class="connection-glow">
-              <svg viewBox="0 0 60 40" fill="none">
-                <ellipse cx="30" cy="20" rx="28" ry="18" fill="#4F46E5" opacity="0.06"/>
-                <ellipse cx="30" cy="20" rx="20" ry="12" fill="#4F46E5" opacity="0.04"/>
-              </svg>
+            <div class="hero-card-body">
+              <div class="hero-card-avatar"></div>
+              <div class="hero-card-lines">
+                <div class="hero-card-line" style="width:60%"></div>
+                <div class="hero-card-line" style="width:40%"></div>
+                <div class="hero-card-line short"></div>
+              </div>
             </div>
-            <div class="stranger stranger-right">
-              <div class="stranger-head"></div>
-              <div class="stranger-body"></div>
-            </div>
-            <div class="chat-glow">
-              <svg viewBox="0 0 40 24" fill="none">
-                <rect x="2" y="2" width="36" height="20" rx="10" fill="#4F46E5" opacity="0.08"/>
-                <path d="M10 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2M20 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2M30 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2" stroke="#4F46E5" stroke-width="0.8" opacity="0.15"/>
-              </svg>
+            <div class="hero-card-footer">
+              <div class="hero-card-btn"></div>
+              <div class="hero-card-btn"></div>
             </div>
           </div>
-          <!-- Floating stat -->
           <div class="hero-floating-stat">
             <div class="stat-dot"></div>
             <div class="stat-content">
               <span class="stat-number" id="live-count">0</span>
-              <span class="stat-label">people online now</span>
+              <span class="stat-label" data-i18n="hero.online_label">অনলাইনে</span>
             </div>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- Human Connection -->
-    <section id="connection">
-      <div class="section-inner">
-        <div class="section-label">CHAPTER I</div>
-        <h2 class="section-title">We've always searched<br>for <span class="highlight">someone to talk to.</span></h2>
-        <p class="section-sub">From handwritten letters to instant video — the way we connect has evolved, but the need remains the same.</p>
-        <div class="connection-cards">
-          <div class="conn-card">
-            <div class="conn-icon">
-              <svg viewBox="0 0 80 80" fill="none">
-                <rect x="12" y="24" width="56" height="40" rx="3" stroke="currentColor" stroke-width="1.2" opacity="0.3"/>
-                <path d="M12 28l28 18 28-18" stroke="currentColor" stroke-width="1.2" opacity="0.3" fill="none"/>
-                <path d="M22 42h36M22 50h28" stroke="currentColor" stroke-width="0.8" opacity="0.15"/>
-              </svg>
-            </div>
-            <div class="conn-year">1800s</div>
-            <h3>Letters</h3>
-            <p>Handwritten words traveling across oceans, carrying stories and emotions.</p>
-          </div>
-          <div class="conn-card">
-            <div class="conn-icon">
-              <svg viewBox="0 0 80 80" fill="none">
-                <path d="M32 52c0 6 16 10 16 10s16-4 16-10V28H32v24z" stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.3"/>
-                <rect x="28" y="20" width="28" height="12" rx="6" stroke="currentColor" stroke-width="1" opacity="0.2" fill="none"/>
-                <path d="M44 62v6M38 68h12" stroke="currentColor" stroke-width="0.8" opacity="0.15"/>
-              </svg>
-            </div>
-            <div class="conn-year">1900s</div>
-            <h3>Telephone</h3>
-            <p>Voices bridging distances, bringing the warmth of sound into conversation.</p>
-          </div>
-          <div class="conn-card">
-            <div class="conn-icon">
-              <svg viewBox="0 0 80 80" fill="none">
-                <rect x="14" y="18" width="52" height="38" rx="4" stroke="currentColor" stroke-width="1.2" opacity="0.3" fill="none"/>
-                <path d="M30 56v6h20v-6" stroke="currentColor" stroke-width="0.8" opacity="0.2"/>
-                <rect x="34" y="10" width="12" height="8" rx="2" stroke="currentColor" stroke-width="0.8" opacity="0.15"/>
-                <circle cx="40" cy="34" r="4" stroke="currentColor" stroke-width="0.8" opacity="0.2"/>
-                <path d="M52 30h6M52 38h6" stroke="currentColor" stroke-width="0.6" opacity="0.12"/>
-              </svg>
-            </div>
-            <div class="conn-year">2024</div>
-            <h3>Anonymous Chat</h3>
-            <p>Meeting strangers without barriers, finding connection in unexpected places.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Timeline -->
-    <section id="timeline">
-      <div class="section-inner">
-        <div class="section-label">CHAPTER II</div>
-        <h2 class="section-title">The evolution of <span class="highlight">connection</span></h2>
-        <div class="timeline-scroll">
-          <div class="timeline-track">
-            <div class="tl-node">
-              <span class="tl-year">1800</span>
-              <span class="tl-label">Letter</span>
-              <span class="tl-icon">✉️</span>
-            </div>
-            <div class="tl-line"></div>
-            <div class="tl-node">
-              <span class="tl-year">1900</span>
-              <span class="tl-label">Telephone</span>
-              <span class="tl-icon">☎️</span>
-            </div>
-            <div class="tl-line"></div>
-            <div class="tl-node">
-              <span class="tl-year">2000</span>
-              <span class="tl-label">Internet</span>
-              <span class="tl-icon">💻</span>
-            </div>
-            <div class="tl-line"></div>
-            <div class="tl-node">
-              <span class="tl-year">2020</span>
-              <span class="tl-label">Video Call</span>
-              <span class="tl-icon">📹</span>
-            </div>
-            <div class="tl-line"></div>
-            <div class="tl-node active">
-              <span class="tl-year">Today</span>
-              <span class="tl-label">Ochena Bondhu</span>
-              <span class="tl-icon">💬</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- World Section -->
-    <section id="world">
-      <div class="section-inner">
-        <div class="section-label">CHAPTER III</div>
-        <h2 class="section-title">Connected across <span class="highlight">the world</span></h2>
-        <div class="world-visual">
-          <div class="world-globe">
-            <svg viewBox="0 0 240 240" fill="none">
-              <circle cx="120" cy="120" r="100" stroke="#4F46E5" stroke-width="0.4" opacity="0.08"/>
-              <circle cx="120" cy="120" r="85" stroke="#4F46E5" stroke-width="0.3" opacity="0.06"/>
-              <ellipse cx="120" cy="120" rx="100" ry="40" stroke="#4F46E5" stroke-width="0.4" opacity="0.06"/>
-              <ellipse cx="120" cy="120" rx="100" ry="40" stroke="#4F46E5" stroke-width="0.4" opacity="0.06" transform="rotate(25 120 120)"/>
-              <ellipse cx="120" cy="120" rx="100" ry="40" stroke="#4F46E5" stroke-width="0.4" opacity="0.06" transform="rotate(-25 120 120)"/>
-              <!-- Country dots --> 
-              <circle cx="80" cy="90" r="2.5" fill="#4F46E5"><animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/></circle>
-              <circle cx="160" cy="80" r="2.5" fill="#06B6D4"><animate attributeName="opacity" values="0.6;1;0.6" dur="2.5s" repeatCount="indefinite"/></circle>
-              <circle cx="100" cy="150" r="2.5" fill="#4F46E5"><animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite"/></circle>
-              <circle cx="180" cy="130" r="2.5" fill="#06B6D4"><animate attributeName="opacity" values="0.6;1;0.6" dur="2.2s" repeatCount="indefinite"/></circle>
-              <circle cx="60" cy="130" r="2.5" fill="#4F46E5"><animate attributeName="opacity" values="0.6;1;0.6" dur="3.5s" repeatCount="indefinite"/></circle>
-              <!-- Connection lines -->
-              <path d="M80 90 Q120 70 160 80" stroke="#4F46E5" stroke-width="0.5" opacity="0.1" fill="none"/>
-              <path d="M160 80 Q150 120 180 130" stroke="#06B6D4" stroke-width="0.5" opacity="0.08" fill="none"/>
-              <path d="M80 90 Q90 120 100 150" stroke="#4F46E5" stroke-width="0.5" opacity="0.08" fill="none"/>
-              <path d="M100 150 Q140 140 180 130" stroke="#4F46E5" stroke-width="0.5" opacity="0.07" fill="none"/>
-              <path d="M60 130 Q80 110 80 90" stroke="#06B6D4" stroke-width="0.5" opacity="0.07" fill="none"/>
-            </svg>
-          </div>
-          <div class="world-countries">
-            <div class="country-row"><span class="country-dot"></span> Bangladesh</div>
-            <div class="country-row"><span class="country-dot"></span> Japan</div>
-            <div class="country-row"><span class="country-dot"></span> Brazil</div>
-            <div class="country-row"><span class="country-dot"></span> Germany</div>
-            <div class="country-row"><span class="country-dot"></span> USA</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Chat Preview -->
-    <section id="chat-preview">
-      <div class="section-inner">
-        <div class="section-label">CHAPTER IV</div>
-        <h2 class="section-title">A conversation can <span class="highlight">change everything</span></h2>
-        <div class="chat-glass">
-          <div class="chat-glass-header">
-            <span class="chat-glass-avatar"></span>
-            <div>
-              <div class="chat-glass-name">Stranger</div>
-              <div class="chat-glass-status">Online</div>
-            </div>
-          </div>
-          <div class="chat-glass-messages">
-            <div class="glass-msg other">Hello!</div>
-            <div class="glass-msg me">Hi 👋</div>
-            <div class="glass-msg other">How are you?</div>
-            <div class="glass-msg me">Good 😊 Where are you from?</div>
-            <div class="glass-msg other">Bangladesh 🇧🇩</div>
-            <div class="glass-dots"><span></span><span></span><span></span></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Friend Section -->
-    <section id="friend">
-      <div class="section-inner friend-inner">
-        <div class="section-label">CHAPTER V</div>
-        <h2 class="section-title">Every friendship<br><span class="highlight">starts with a hello.</span></h2>
-        <div class="friend-art">
-          <div class="friend-person fp-left">
-            <div class="fp-head"></div>
-            <div class="fp-body"></div>
-          </div>
-          <div class="friend-connection">
-            <svg viewBox="0 0 60 60" fill="none">
-              <path d="M20 30 Q30 20 40 30" stroke="#F59E0B" stroke-width="1" opacity="0.3" fill="none"/>
-              <path d="M25 35 Q30 45 35 35" stroke="#F59E0B" stroke-width="1" opacity="0.2" fill="none"/>
-              <path d="M27 30 Q30 25 33 30" stroke="#F59E0B" stroke-width="0.8" opacity="0.15" fill="none"/>
-              <circle cx="30" cy="27" r="8" fill="#F59E0B" opacity="0.06"/>
-              <circle cx="30" cy="27" r="5" fill="#F59E0B" opacity="0.04"/>
-              <path d="M28 27 L30 24 L32 27" stroke="#F59E0B" stroke-width="0.6" opacity="0.2" fill="none"/>
-            </svg>
-          </div>
-          <div class="friend-person fp-right">
-            <div class="fp-head"></div>
-            <div class="fp-body"></div>
-          </div>
-        </div>
-        <p class="friend-words">"The most beautiful thing in the world is the connection between two people."</p>
       </div>
     </section>
 
     <!-- Features -->
     <section id="features">
       <div class="section-inner">
-        <div class="section-label">WHY OCHENA BONDHU</div>
-        <h2 class="section-title">Designed for <span class="highlight">real connection</span></h2>
+        <h2 class="section-title" data-i18n="features.label">কেন Ochena Bondhu</h2>
         <div class="feature-grid">
-          <div class="feature-card">
-            <div class="feat-illustration">
-              <svg viewBox="0 0 64 64" fill="none">
-                <circle cx="32" cy="20" r="10" stroke="currentColor" stroke-width="1.2" opacity="0.3"/>
-                <path d="M14 52c0-10 8-18 18-18s18 8 18 18" stroke="currentColor" stroke-width="1.2" opacity="0.2"/>
-                <path d="M24 30l-8 12M40 30l8 12" stroke="currentColor" stroke-width="1" opacity="0.15"/>
-              </svg>
-            </div>
-            <h3>Anonymous</h3>
-            <p>No name, no email, no data stored. Your identity is yours alone.</p>
+          <div class="fcard">
+            <div class="fcard-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <h3 data-i18n="features.anonymous_title">বেনামী</h3>
+            <p data-i18n="features.anonymous_desc">কোনো নাম বা ইমেইল নয়। সম্পূর্ণ বেনামী।</p>
           </div>
-          <div class="feature-card">
-            <div class="feat-illustration">
-              <svg viewBox="0 0 64 64" fill="none">
-                <rect x="20" y="14" width="24" height="30" rx="3" stroke="currentColor" stroke-width="1.2" opacity="0.3"/>
-                <path d="M26 24V18a6 6 0 0112 0v6" stroke="currentColor" stroke-width="1.2" opacity="0.3"/>
-                <circle cx="32" cy="34" r="3" fill="currentColor" opacity="0.15"/>
-                <path d="M30 42h4" stroke="currentColor" stroke-width="1" opacity="0.2"/>
-              </svg>
-            </div>
-            <h3>Private</h3>
-            <p>End-to-end encrypted video. Your conversations stay between you and your partner.</p>
+          <div class="fcard">
+            <div class="fcard-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+            <h3 data-i18n="features.video_title">ভিডিও চ্যাট</h3>
+            <p data-i18n="features.video_desc">রিয়েল-টাইম ভিডিও কল। এন্ড-টু-এন্ড এনক্রিপ্টেড।</p>
           </div>
-          <div class="feature-card">
-            <div class="feat-illustration">
-              <svg viewBox="0 0 64 64" fill="none">
-                <circle cx="32" cy="32" r="22" stroke="currentColor" stroke-width="1.2" opacity="0.3"/>
-                <ellipse cx="32" cy="32" rx="22" ry="9" stroke="currentColor" stroke-width="0.8" opacity="0.15"/>
-                <path d="M20 22q12-8 24 0M20 42q12 8 24 0" stroke="currentColor" stroke-width="0.8" opacity="0.12"/>
-                <circle cx="38" cy="26" r="2" fill="currentColor" opacity="0.2"/>
-                <circle cx="26" cy="38" r="2" fill="currentColor" opacity="0.2"/>
-                <path d="M38 26l-12 12" stroke="currentColor" stroke-width="0.6" opacity="0.15"/>
-              </svg>
-            </div>
-            <h3>Worldwide</h3>
-            <p>Connect with real people from every corner of the globe, anytime.</p>
+          <div class="fcard">
+            <div class="fcard-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div>
+            <h3 data-i18n="features.global_title">বিশ্বব্যাপী</h3>
+            <p data-i18n="features.global_desc">পৃথিবীর যেকোনো প্রান্ত থেকে নতুন মানুষের সাথে সংযোগ।</p>
           </div>
-          <div class="feature-card">
-            <div class="feat-illustration">
-              <svg viewBox="0 0 64 64" fill="none">
-                <path d="M36 12c-14 0-24 10-24 20s10 20 24 20" stroke="currentColor" stroke-width="1.2" opacity="0.3"/>
-                <path d="M36 32l-8 8 8-8-8-8" stroke="currentColor" stroke-width="1.2" opacity="0.3"/>
-                <path d="M36 16v4M36 44v4" stroke="currentColor" stroke-width="0.8" opacity="0.15"/>
-              </svg>
-            </div>
-            <h3>Lightning Fast</h3>
-            <p>Matched in seconds. No endless swiping or waiting around.</p>
+          <div class="fcard">
+            <div class="fcard-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+            <h3 data-i18n="features.fast_title">দ্রুত</h3>
+            <p data-i18n="features.fast_desc">সেকেন্ডের মধ্যে ম্যাচ। কোনো অপেক্ষা নয়।</p>
           </div>
         </div>
       </div>
@@ -363,43 +126,23 @@
     <!-- Safety -->
     <section id="safety">
       <div class="section-inner">
-        <div class="section-label">SAFETY FIRST</div>
-        <h2 class="section-title">Your safety is <span class="highlight">our priority</span></h2>
-        <div class="safety-showcase">
-          <div class="safety-shield">
-            <svg viewBox="0 0 120 140" fill="none">
-              <path d="M60 10L10 30v40c0 30 20 50 50 60 30-10 50-30 50-60V30L60 10z" stroke="currentColor" stroke-width="0.8" opacity="0.12"/>
-              <path d="M60 18L16 36v34c0 26 18 44 44 52 26-8 44-26 44-52V36L60 18z" stroke="currentColor" stroke-width="0.6" opacity="0.08"/>
-              <path d="M48 62l8 8 16-16" stroke="#10B981" stroke-width="1.5" opacity="0.3"/>
-            </svg>
-          </div>
-          <div class="safety-list">
-            <div class="safety-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg> AI-assisted moderation</div>
-            <div class="safety-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg> End-to-end encrypted</div>
-            <div class="safety-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg> Block users instantly</div>
-            <div class="safety-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg> Easy reporting</div>
-            <div class="safety-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M2 12L12 2l10 10"/></svg> 18+ only</div>
-          </div>
+        <h2 class="section-title" data-i18n="safety.title">আপনার নিরাপত্তা <span class="highlight">আমাদের অগ্রাধিকার</span></h2>
+        <div class="safety-pills">
+          <span class="safety-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg> <span data-i18n="safety.ai_moderation">এআই মডারেশন</span></span>
+          <span class="safety-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg> <span data-i18n="safety.encrypted">এন্ড-টু-এন্ড এনক্রিপ্টেড</span></span>
+          <span class="safety-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg> <span data-i18n="safety.instant_block">তাৎক্ষণিক ব্লক</span></span>
+          <span class="safety-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg> <span data-i18n="safety.easy_report">সহজ রিপোর্টিং</span></span>
+          <span class="safety-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12L12 2l10 10"/></svg> <span data-i18n="safety.age_18">শুধুমাত্র ১৮+</span></span>
         </div>
       </div>
     </section>
 
-    <!-- Final CTA -->
+    <!-- CTA -->
     <section id="cta-section">
-      <div class="cta-glow"></div>
       <div class="section-inner cta-inner">
-        <div class="cta-thread-end">
-          <svg viewBox="0 0 60 60" fill="none">
-            <path d="M30 10C30 10 20 20 20 28C20 36 30 40 30 40C30 40 40 36 40 28C40 20 30 10 30 10Z" stroke="#4F46E5" stroke-width="0.8" opacity="0.3"/>
-            <path d="M30 16C30 16 24 23 24 28C24 33 30 36 30 36C30 36 36 33 36 28C36 23 30 16 30 16Z" stroke="#4F46E5" stroke-width="0.6" opacity="0.15"/>
-            <path d="M30 36 L30 52" stroke="#4F46E5" stroke-width="0.6" opacity="0.2"/>
-            <path d="M24 44 Q30 48 36 44" stroke="#4F46E5" stroke-width="0.6" opacity="0.15" fill="none"/>
-            <circle cx="30" cy="52" r="2" fill="#4F46E5" opacity="0.3"/>
-          </svg>
-        </div>
-        <h2 class="cta-heading">Ready to meet<br><span class="highlight">someone new?</span></h2>
-        <p class="cta-desc">Thousands of people are online right now, waiting to connect.</p>
-        <button id="hero-cta-2" class="hero-btn cta-btn">Start Chat &rarr;</button>
+        <h2 class="cta-heading" data-i18n="cta.title">হয়তো আপনার পরবর্তী বন্ধুটি<br><span class="highlight">এখনই অপেক্ষা করছে।</span></h2>
+        <p class="cta-desc" data-i18n="cta.desc">হাজারো মানুষ অনলাইনে আছেন। শুরু করুন নতুন কারও সাথে কথা বলা।</p>
+        <button id="hero-cta-2" class="hero-btn" data-i18n="cta.btn">শুরু করুন &rarr;</button>
         <div class="cta-stats">
           <span id="cta-online" class="cta-online"></span>
         </div>
@@ -413,24 +156,24 @@
       <div class="footer-brand-col">
         <div class="footer-brand">
           <img src="logo.svg" alt="" width="32" height="32">
-          <span class="footer-logo-text">Ochena Bondhu</span>
+          <span class="footer-logo-text" data-i18n="footer.brand">Ochena Bondhu</span>
         </div>
-        <p class="footer-desc">Random video chat for real connection. Meet strangers, find friends.</p>
+        <p class="footer-desc" data-i18n="footer.desc">অচেনা মানুষের সাথে নতুন গল্প তৈরি করুন। একটি নিরাপদ ও বেনামী ভিডিও চ্যাট প্ল্যাটফর্ম।</p>
       </div>
       <div class="footer-links-col">
-        <h4>Links</h4>
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms of Service</a>
-        <a href="#safety">Safety</a>
+        <h4 data-i18n="footer.links_heading">লিংক</h4>
+        <a href="#" data-i18n="footer.privacy">প্রাইভেসি পলিসি</a>
+        <a href="#" data-i18n="footer.terms">শর্তাবলী</a>
+        <a href="#safety" data-i18n="footer.safety_link">নিরাপত্তা</a>
       </div>
       <div class="footer-links-col">
-        <h4>Coming Soon</h4>
-        <div class="badge-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Google Play</div>
-        <div class="badge-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg> App Store</div>
+        <h4 data-i18n="footer.coming_soon">শীঘ্রই আসছে</h4>
+        <div class="badge-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> <span data-i18n="footer.google_play">গুগল প্লে</span></div>
+        <div class="badge-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg> <span data-i18n="footer.app_store">অ্যাপ স্টোর</span></div>
       </div>
     </div>
     <div class="footer-bottom">
-      <span>&copy; 2026 Ochena Bondhu. Crafted with care.</span>
+      <span data-i18n="footer.copyright">বাংলাদেশের ভালোবাসায় তৈরি &copy; ২০২৬</span>
     </div>
   </footer>
 
@@ -438,49 +181,49 @@
   <div id="connecting" class="fullscreen screen-fade visible">
     <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
     <img src="logo.svg" alt="" class="connecting-logo">
-    <p id="conn-msg">Connecting</p>
+    <p id="conn-msg" data-i18n="overlay.connecting">Connecting</p>
   </div>
 
   <!-- Modal Overlay (for profile / perm / preview steps) -->
   <div id="modal-overlay" class="modal-overlay hidden">
     <div class="modal" id="profile-step">
       <img src="logo.svg" alt="" class="modal-logo" width="48">
-      <h2>Welcome</h2>
-      <p class="modal-sub">Let's get you connected.</p>
+      <h2 data-i18n="modal.welcome_title">Welcome</h2>
+      <p class="modal-sub" data-i18n="modal.welcome_sub">Let's get you connected.</p>
       <div class="field">
-        <label for="profile-name">Name</label>
-        <input type="text" id="profile-name" placeholder="Enter your name" maxlength="30">
+        <label for="profile-name" data-i18n="modal.name_label">Name</label>
+        <input type="text" id="profile-name" placeholder="Enter your name" data-i18n-placeholder="modal.name_placeholder" maxlength="30">
       </div>
       <div class="field">
-        <label for="profile-age">Age</label>
-        <input type="number" id="profile-age" placeholder="Your age" min="13" max="120">
+        <label for="profile-age" data-i18n="modal.age_label">Age</label>
+        <input type="number" id="profile-age" placeholder="Your age" data-i18n-placeholder="modal.age_placeholder" min="13" max="120">
       </div>
       <div class="field">
-        <label for="profile-gender">Gender</label>
+        <label for="profile-gender" data-i18n="modal.gender_label">Gender</label>
         <select id="profile-gender">
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="other">Other</option>
+          <option value="male" data-i18n="modal.gender_male">Male</option>
+          <option value="female" data-i18n="modal.gender_female">Female</option>
+          <option value="other" data-i18n="modal.gender_other">Other</option>
         </select>
       </div>
       <label class="check">
         <input type="checkbox" id="profile-18">
-        I am 18 years or older
+        <span data-i18n="modal.age_consent">I am 18 years or older</span>
       </label>
       <p id="profile-error" class="err hidden"></p>
-      <button id="profile-submit" class="modal-btn">Continue</button>
+      <button id="profile-submit" class="modal-btn" data-i18n="modal.continue_btn">Continue</button>
     </div>
 
     <div class="modal hidden" id="perm-step">
       <img src="logo.svg" alt="" class="modal-logo" width="48">
-      <h2>Camera &amp; Microphone</h2>
-      <p class="modal-sub">We need access to your camera and microphone so you can talk with other people. Nothing is recorded.</p>
+      <h2 data-i18n="modal.perm_title">Camera &amp; Microphone</h2>
+      <p class="modal-sub" data-i18n="modal.perm_sub">We need access to your camera and microphone so you can talk with other people. Nothing is recorded.</p>
       <div class="perm-icons">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
       </div>
       <p id="perm-error" class="err hidden"></p>
-      <button id="perm-btn" class="modal-btn">Allow Camera</button>
+      <button id="perm-btn" class="modal-btn" data-i18n="modal.perm_btn">Allow Camera &amp; Mic</button>
     </div>
 
     <div class="modal hidden" id="preview-step">
@@ -493,39 +236,48 @@
         <span id="preview-gender"></span>
       </div>
       <p id="preview-error" class="err hidden"></p>
-      <button id="preview-start" class="modal-btn">Start Searching</button>
+      <button id="preview-start" class="modal-btn" data-i18n="modal.preview_btn">Start Searching</button>
     </div>
 
     <div class="modal hidden" id="settings-step">
-      <h2>Settings</h2>
+      <h2 data-i18n="modal.settings_title">Settings</h2>
       <div class="settings-group">
         <label class="settings-row">
-          <span>Noise Suppression</span>
+          <span data-i18n="modal.noise_label">Noise Suppression</span>
           <label class="toggle">
             <input type="checkbox" id="noise-toggle" checked>
             <span class="slider"></span>
           </label>
         </label>
-        <p class="settings-desc">Reduces background noise during calls</p>
+        <p class="settings-desc" data-i18n="modal.noise_desc">Reduces background noise during calls</p>
       </div>
       <div class="settings-group">
         <label class="settings-row">
-          <span>Keyboard Shortcuts</span>
-          <span class="shortcuts-hint">
+          <span data-i18n="modal.shortcuts_label">Keyboard Shortcuts</span>
+          <span class="shortcuts-hint" data-i18n="modal.shortcuts_hint">
             <kbd>N</kbd> Next &middot; <kbd>M</kbd> Mic &middot; <kbd>C</kbd> Cam
           </span>
         </label>
       </div>
       <div class="settings-group">
         <label class="settings-row">
-          <span>Dark Theme</span>
+          <span data-i18n="modal.dark_label">Dark Theme</span>
           <label class="toggle">
             <input type="checkbox" id="dark-toggle" checked>
             <span class="slider"></span>
           </label>
         </label>
       </div>
-      <button id="settings-close" class="modal-btn secondary">Close</button>
+      <div class="settings-group">
+        <label class="settings-row">
+          <span>Sound Effects</span>
+          <label class="toggle">
+            <input type="checkbox" id="sound-toggle" checked>
+            <span class="slider"></span>
+          </label>
+        </label>
+      </div>
+      <button id="settings-close" class="modal-btn secondary" data-i18n="modal.close_btn">Close</button>
     </div>
   </div>
 
@@ -533,11 +285,12 @@
   <div id="chat" class="fullscreen hidden screen-fade">
     <div id="status-bar">
       <span id="status-dot" class="dot-yellow"></span>
-      <span id="status-label">Searching</span>
+      <span id="status-label" data-i18n="chat.searching">Searching</span>
       <span id="quality-indicator"></span>
       <span id="call-timer"></span>
       <span id="status-wait"></span>
-      <button id="btn-cancel-find" class="hidden">Cancel</button>
+      <span id="mic-meter" class="mic-meter" title="Mic level"></span>
+      <button id="btn-cancel-find" class="hidden" data-i18n="chat.cancel">Cancel</button>
     </div>
 
     <div id="match-overlay" class="hidden">
@@ -545,7 +298,7 @@
         <div class="match-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/></svg>
         </div>
-        <div class="match-label">Connected</div>
+        <div class="match-label" data-i18n="chat.match_connected">Connected</div>
         <div class="match-name"></div>
       </div>
     </div>
@@ -554,67 +307,71 @@
       <video id="partner-video" autoplay playsinline></video>
       <div id="enc-badge" class="hidden">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-        E2E Encrypted
+        <span data-i18n="chat.e2e">E2E Encrypted</span>
       </div>
       <div id="placeholder">
-        <div class="search-pulse"></div>
-        <div id="status-text">Finding a partner...</div>
-        <div class="status-hint">Tap Next anytime to skip</div>
+        <div class="search-waves">
+          <div class="search-wave"></div>
+          <div class="search-wave"></div>
+          <div class="search-wave"></div>
+        </div>
+        <div id="status-text" data-i18n="chat.finding">Finding a partner...</div>
+        <div class="status-hint" data-i18n="chat.tap_hint">Tap Next anytime to skip</div>
       </div>
     </div>
 
     <div id="self-box">
       <video id="self-video" autoplay muted playsinline></video>
-      <span id="self-label">You</span>
+      <span id="self-label" data-i18n="chat.you">You</span>
     </div>
 
     <div id="controls">
-      <button id="btn-next" class="ctrl" title="Next">
+      <button id="btn-next" class="ctrl" data-i18n-title="chat.next" aria-label="Next partner">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>
-        <span class="ctrl-label">Next</span>
+        <span class="ctrl-label" data-i18n="chat.next">Next</span>
       </button>
-      <button id="btn-mic" class="ctrl" title="Mic">
+      <button id="btn-mic" class="ctrl" data-i18n-title="chat.mic" aria-label="Toggle microphone">
         <svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
         <svg class="off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-4.5 6.5"/><line x1="1" y1="1" x2="23" y2="23"/><path d="M12 19v4M8 23h8"/></svg>
-        <span class="ctrl-label">Mic</span>
+        <span class="ctrl-label" data-i18n="chat.mic">Mic</span>
       </button>
-      <button id="btn-cam" class="ctrl" title="Camera">
+      <button id="btn-cam" class="ctrl" data-i18n-title="chat.cam" aria-label="Toggle camera">
         <svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" stroke="currentColor" fill="none"/></svg>
         <svg class="off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" stroke="currentColor" fill="none"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-        <span class="ctrl-label">Cam</span>
+        <span class="ctrl-label" data-i18n="chat.cam">Cam</span>
       </button>
-      <button id="btn-report" class="ctrl" title="Report">
+      <button id="btn-report" class="ctrl" data-i18n-title="chat.report" aria-label="Report user">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-        <span class="ctrl-label">Report</span>
+        <span class="ctrl-label" data-i18n="chat.report">Report</span>
       </button>
-      <button id="btn-chat" class="ctrl" title="Chat">
+      <button id="btn-chat" class="ctrl" data-i18n-title="chat.chat" aria-label="Open chat panel">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-        <span class="ctrl-label">Chat</span>
+        <span class="ctrl-label" data-i18n="chat.chat">Chat</span>
         <span id="chat-badge" class="hidden"></span>
       </button>
-      <button id="btn-settings" class="ctrl" title="Settings">
+      <button id="btn-settings" class="ctrl" data-i18n-title="chat.settings" aria-label="Open settings">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        <span class="ctrl-label">Settings</span>
+        <span class="ctrl-label" data-i18n="chat.settings">Settings</span>
       </button>
-      <button id="btn-share" class="ctrl" title="Share">
+      <button id="btn-share" class="ctrl" data-i18n-title="chat.share" aria-label="Share link">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
-        <span class="ctrl-label">Share</span>
+        <span class="ctrl-label" data-i18n="chat.share">Share</span>
       </button>
-      <button id="btn-stop" class="ctrl danger" title="Stop">
+      <button id="btn-stop" class="ctrl danger" data-i18n-title="chat.stop" aria-label="Stop and leave">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h12v12H6z"/></svg>
-        <span class="ctrl-label">Stop</span>
+        <span class="ctrl-label" data-i18n="chat.stop">Stop</span>
       </button>
     </div>
 
     <!-- Chat Panel -->
     <div id="panel">
       <div id="panel-header">
-        <span>Chat</span>
+        <span data-i18n="chat.panel_title">Chat</span>
         <button id="close-panel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
       </div>
       <div id="messages"></div>
       <div id="chat-input-area">
-        <input type="text" id="chat-input" placeholder="Message..." disabled>
+        <input type="text" id="chat-input" placeholder="Message..." data-i18n-placeholder="chat.msg_placeholder" disabled>
         <button id="send-btn" disabled>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
         </button>
@@ -624,20 +381,26 @@
     <!-- Report Dialog -->
     <div id="report-overlay" class="hidden">
       <div id="report-dialog">
-        <h3>Report User</h3>
+        <h3 data-i18n="chat.report_title">Report User</h3>
         <button id="report-close" class="report-x">&times;</button>
         <div id="report-options">
-          <button class="report-opt" data-reason="Spam">Spam</button>
-          <button class="report-opt" data-reason="Harassment">Harassment</button>
-          <button class="report-opt" data-reason="Nudity">Nudity</button>
-          <button class="report-opt" data-reason="Fake Camera">Fake Camera</button>
-          <button class="report-opt" data-reason="Other">Other</button>
+          <button class="report-opt" data-reason="Spam" data-i18n="chat.report_spam">Spam</button>
+          <button class="report-opt" data-reason="Harassment" data-i18n="chat.report_harassment">Harassment</button>
+          <button class="report-opt" data-reason="Nudity" data-i18n="chat.report_nudity">Nudity</button>
+          <button class="report-opt" data-reason="Fake Camera" data-i18n="chat.report_fake_cam">Fake Camera</button>
+          <button class="report-opt" data-reason="Other" data-i18n="chat.report_other">Other</button>
         </div>
         <p id="report-status" class="err hidden"></p>
       </div>
     </div>
   </div>
 
+  <div id="reconnect-banner"></div>
+  <div id="toast-container"></div>
+
+  <script>window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };</script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

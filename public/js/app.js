@@ -8,8 +8,10 @@ const CONFIG = {
 };
 
 let ws, localStream, pc;
+let remoteStream = null;
 let userId, partnerId, isInitiator;
 let pendingCandidates = [];
+let pendingIceBeforePC = [];
 let unread = 0;
 let reconnectTimer = null;
 let connecting = false;
@@ -25,15 +27,57 @@ let callTimer = null;
 let callStartTime = null;
 let callTimerInterval = null;
 let lastMsgTime = 0;
+let currentStatus = '';
 
-const searchMessages = [
-  'Looking for someone nearby...',
-  'Finding the best match...',
-  'Checking connection quality...',
-  'Almost ready...'
-];
+let currentLocale = 'bn';
+function onLangChange() {
+  currentLocale = I18n.locale;
+  if (findTimer) {
+    startSearchMessages();
+    const st = $('status-text');
+    if (st) { /* will be reset by setStatus etc. */ }
+  }
+}
 
 const $ = id => document.getElementById(id);
+
+// ===== Toast Notifications =====
+function toast(msg, type = 'info', duration = 3500) {
+  const container = $('toast-container');
+  if (!container) return;
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  const icons = {
+    info: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+    success: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+    error: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
+  };
+  el.innerHTML = icons[type] || icons.info;
+  el.insertAdjacentHTML('beforeend', '<span>' + msg + '</span>');
+  container.appendChild(el);
+  setTimeout(() => { if (el.parentNode) el.remove(); }, duration);
+}
+
+// ===== Sound Toggle =====
+let soundEnabled = localStorage.getItem('ob_sound') !== '0';
+function isSoundEnabled() { return soundEnabled; }
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  localStorage.setItem('ob_sound', soundEnabled ? '1' : '0');
+  const btn = $('sound-toggle');
+  if (btn) btn.checked = soundEnabled;
+}
+
+function showReconnectBanner(text) {
+  const banner = $('reconnect-banner');
+  if (!banner) return;
+  banner.textContent = text;
+  banner.classList.add('show');
+}
+function hideReconnectBanner() {
+  const banner = $('reconnect-banner');
+  if (banner) banner.classList.remove('show');
+}
 
 function connect() {
   if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) return;
@@ -41,43 +85,54 @@ function connect() {
   ws = new WebSocket(CONFIG.wsUrl);
   connecting = true;
   const connMsg = $('conn-msg');
-  if (connMsg) connMsg.textContent = 'Connecting';
+  if (connMsg) connMsg.textContent = __('overlay.connecting');
   connTimeout = setTimeout(() => {
     if (connecting) {
       const s = $('conn-msg');
       if (s) {
-        s.innerHTML = 'Taking longer than usual. <a href="#" id="conn-retry" style="color:var(--primary)">Try again</a>';
-        const retry = $('conn-retry');
-        if (retry) retry.onclick = (e) => { e.preventDefault(); ws.close(); connect(); };
+        s.innerHTML = __('overlay.timeout');
+        s.onclick = (e) => {
+          if (e.target.id === 'conn-retry') { e.preventDefault(); ws.close(); connect(); }
+        };
       }
     }
   }, 10000);
   ws.onopen = () => {
     connecting = false;
+    hideReconnectBanner();
     if (connTimeout) { clearTimeout(connTimeout); connTimeout = null; }
   };
-  ws.onmessage = e => handle(JSON.parse(e.data));
+  ws.onmessage = e => {
+    try {
+      const data = JSON.parse(e.data);
+      if (data && typeof data.type === 'string') handle(data);
+    } catch (_) { /* ignore malformed messages */ }
+  };
   ws.onclose = (e) => {
     connecting = false;
     if (connTimeout) { clearTimeout(connTimeout); connTimeout = null; }
     if (document.visibilityState !== 'hidden') {
       if (e.code !== 1000) {
+        const msg = e.code === 1006 ? __('overlay.server_unreachable') : __('overlay.disconnected_reconnect');
         const m = $('conn-msg');
-        if (m) m.textContent = e.code === 1006 ? 'Server unreachable. Retrying...' : 'Disconnected. Reconnecting...';
+        if (m) m.textContent = msg;
+        showReconnectBanner(msg);
       }
       reconnectTimer = setTimeout(connect, 3000);
     }
   };
   ws.onerror = () => {
     const m = $('conn-msg');
-    if (m) m.textContent = 'Connection error. Retrying...';
+    if (m) m.textContent = __('overlay.conn_error');
   };
 }
 
 function safeSend(data) {
   if (ws && ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify(data));
-    return true;
+    try {
+      ws.send(JSON.stringify(data));
+      return true;
+    } catch (_) { return false; }
   }
   return false;
 }
@@ -85,7 +140,7 @@ function safeSend(data) {
 function findPartner() {
   const p = getProfile();
   if (!safeSend({ type: 'find', profile: p || {} })) {
-    sysMsg('Connection lost. Reconnecting...');
+    sysMsg(__('sys.conn_lost_reconnect'));
     const retry = setInterval(() => {
       if (safeSend({ type: 'find', profile: p || {} })) {
         clearInterval(retry);
@@ -109,18 +164,19 @@ function stopLocalStream() {
 }
 
 function setStatus(state) {
+  currentStatus = state;
   const dot = $('status-dot');
   const label = $('status-label');
   dot.className = '';
   if (state === 'searching') {
     dot.classList.add('dot-yellow');
-    label.textContent = 'Searching';
+    label.textContent = __('status.searching');
   } else if (state === 'connected') {
     dot.classList.add('dot-green');
-    label.textContent = 'Connected';
+    label.textContent = __('status.connected');
   } else if (state === 'disconnected') {
     dot.classList.add('dot-red');
-    label.textContent = 'Disconnected';
+    label.textContent = __('status.disconnected');
   } else {
     dot.classList.add('dot-gray');
     label.textContent = state;
@@ -154,25 +210,72 @@ function stopFindTimer() {
   findStartTime = null;
 }
 
+function getSearchMessages() {
+  return [__('search.msg1'), __('search.msg2'), __('search.msg3'), __('search.msg4')];
+}
+
 function startSearchMessages() {
   searchMsgIndex = 0;
-  $('status-text').textContent = searchMessages[0];
+  $('status-text').textContent = __('search.msg1');
   if (searchMsgTimer) clearInterval(searchMsgTimer);
   searchMsgTimer = setInterval(() => {
-    searchMsgIndex = (searchMsgIndex + 1) % searchMessages.length;
-    $('status-text').textContent = searchMessages[searchMsgIndex];
+    const msgs = getSearchMessages();
+    searchMsgIndex = (searchMsgIndex + 1) % msgs.length;
+    $('status-text').textContent = msgs[searchMsgIndex];
   }, 3000);
 }
 
 function showEmptyState() {
-  $('status-text').innerHTML = 'No one is available right now.<br>More people usually join during the evening.';
-  $('btn-cancel-find').textContent = 'Try Again';
+  $('status-text').innerHTML = __('status.empty_title');
+  $('btn-cancel-find').textContent = __('status.try_again');
 }
 
-// Sound effects
-function playSound(type) {
+// Reusable AudioContext — created once on first user gesture
+let audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+// Mic audio level meter
+let micAnalyser = null;
+let micMeterInterval = null;
+function startMicMeter(stream) {
+  stopMicMeter();
+  const audioTrack = stream.getAudioTracks()[0];
+  if (!audioTrack) return;
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = getAudioCtx();
+    const source = ctx.createMediaStreamSource(stream);
+    micAnalyser = ctx.createAnalyser();
+    micAnalyser.fftSize = 256;
+    source.connect(micAnalyser);
+    const meterEl = $('mic-meter');
+    if (!meterEl) return;
+    micMeterInterval = setInterval(() => {
+      if (!micAnalyser) return;
+      const data = new Uint8Array(micAnalyser.frequencyBinCount);
+      micAnalyser.getByteFrequencyData(data);
+      const avg = data.reduce((a, b) => a + b, 0) / data.length;
+      const pct = Math.min(avg / 128, 1);
+      meterEl.style.setProperty('--level', pct);
+      meterEl.classList.toggle('active', pct > 0.05);
+    }, 100);
+  } catch (_) {}
+}
+function stopMicMeter() {
+  if (micMeterInterval) { clearInterval(micMeterInterval); micMeterInterval = null; }
+  micAnalyser = null;
+  const meterEl = $('mic-meter');
+  if (meterEl) { meterEl.style.setProperty('--level', '0'); meterEl.classList.remove('active'); }
+}
+
+// Sound effects — shares the reused AudioContext
+function playSound(type) {
+  if (!isSoundEnabled()) return;
+  try {
+    const ctx = getAudioCtx();
     const osc = ctx.createOscillator();
     const g = ctx.createGain();
     g.gain.value = 0.15;
@@ -215,10 +318,8 @@ function show(name) {
   const targetId = fullscreenMap[name];
   if (!targetId) return;
 
-  // Find current visible screen-fade element
   const current = document.querySelector('.screen-fade.visible');
   if (!current || current.id === targetId) {
-    // No transition needed — first load or same screen
     document.querySelectorAll('.fullscreen').forEach(el => {
       el.classList.toggle('hidden', el.id !== targetId);
       if (el.id === targetId) { el.classList.remove('hidden'); el.classList.add('visible'); }
@@ -238,52 +339,36 @@ function show(name) {
 
   transitioning = true;
 
-  const finish = () => {
-    // Hide current
-    current.classList.add('hidden');
-    current.classList.remove('fade-out', 'visible');
-    // Show target
-    const target = $(targetId);
-    if (target) {
-      target.classList.remove('hidden');
-      target.classList.add('visible');
-    }
-    transitioning = false;
-  };
-
   // Fade out current
-  if (current.id === 'landing' || current.id === 'connecting') {
-    current.classList.remove('visible');
-    current.classList.add('fade-out');
-  } else if (current.id === 'chat') {
-    current.classList.remove('visible');
-    current.classList.add('fade-out');
-  }
+  current.classList.remove('visible');
+  current.classList.add('fade-out');
 
-  // Sync nav/landing/footer visibility with animation
+  // Hide nav/footer immediately when going to chat
   if (targetId === 'chat') {
-    // Going to chat — hide landing elements
-    if (landing && !landing.classList.contains('hidden')) landing.classList.add('hidden');
-    if (nav && !nav.classList.contains('hidden')) nav.classList.add('hidden');
-    if (footer && !footer.classList.contains('hidden')) footer.classList.add('hidden');
-  } else if (name === 'landing') {
-    // Coming from chat to landing — show after transition
-    setTimeout(() => {
-      if (landing) landing.classList.remove('hidden');
-      if (nav) nav.classList.remove('hidden');
-      if (footer) footer.classList.remove('hidden');
-    }, 250);
-  }
-
-  setTimeout(finish, 220);
-
-  if (name === 'chat') {
+    if (landing) landing.classList.add('hidden');
+    if (nav) nav.classList.add('hidden');
+    if (footer) footer.classList.add('hidden');
     setStatus('searching');
     startFindTimer();
     startSearchMessages();
   } else {
     stopFindTimer();
   }
+
+  setTimeout(() => {
+    current.classList.add('hidden');
+    current.classList.remove('fade-out');
+    const target = $(targetId);
+    if (target) {
+      target.classList.remove('hidden');
+      target.classList.add('fade-in');
+      requestAnimationFrame(() => {
+        target.classList.remove('fade-in');
+        target.classList.add('visible');
+      });
+    }
+    transitioning = false;
+  }, 250);
 }
 
 function openModal(step) {
@@ -297,6 +382,14 @@ function openModal(step) {
     if (match) found = true;
   });
   if (!found) overlay.classList.add('hidden');
+  // Auto-focus first input in the modal
+  requestAnimationFrame(() => {
+    const active = document.querySelector('#modal-overlay > .modal:not(.hidden)');
+    if (active) {
+      const input = active.querySelector('input:not([type="checkbox"]):not([type="hidden"]), select, textarea');
+      if (input) setTimeout(() => input.focus(), 100);
+    }
+  });
 }
 
 function closeModal() {
@@ -315,9 +408,9 @@ function handle(msg) {
     case 'connected':
       userId = msg.userId;
       if (partnerId) {
-        sysMsg('Connection lost. Tap Next to find someone new.');
+        sysMsg(__('sys.conn_lost_next'));
         cleanupPC();
-        $('status-text').textContent = 'Connection lost - tap Next';
+        $('status-text').textContent = __('status.conn_lost_tap');
         $('chat-input').disabled = true;
         $('send-btn').disabled = true;
         return;
@@ -326,16 +419,18 @@ function handle(msg) {
         findPartner();
         return;
       }
+      const wasConnecting = !$('connecting').classList.contains('hidden');
       show('landing');
       const p = getProfile();
-      if (!p) {
-        openModal('profile');
-      } else if (!permGranted) {
-        openModal('perm');
-      }
+      const doModal = () => {
+        if (!p) openModal('profile');
+        else if (!permGranted) openModal('perm');
+      };
+      if (wasConnecting) setTimeout(doModal, 250);
+      else doModal();
       break;
     case 'waiting':
-      $('status-text').textContent = 'Waiting for a partner...';
+      $('status-text').textContent = __('status.waiting');
       if (noOneTimer) clearTimeout(noOneTimer);
       break;
     case 'matched':
@@ -343,7 +438,7 @@ function handle(msg) {
       isInitiator = msg.initiator;
       show('chat');
       stopFindTimer();
-      const partnerName = msg.partnerName || 'a stranger';
+      const partnerName = msg.partnerName || __('sys.a_stranger');
       const partnerGender = msg.partnerGender || '';
       const label = partnerGender ? `${partnerName} (${partnerGender})` : partnerName;
       // Show match animation
@@ -353,22 +448,23 @@ function handle(msg) {
         overlay.classList.remove('hidden');
         setTimeout(() => {
           overlay.classList.add('hidden');
-          $('status-text').textContent = 'Connecting...';
+          $('status-text').textContent = __('status.connecting_ellipsis');
           $('chat-input').disabled = false;
           $('send-btn').disabled = false;
-          sysMsg('Connected with ' + label);
+          sysMsg(__('sys.connected_with', { label }));
           startPeerConnection();
         }, 800);
       } else {
-        $('status-text').textContent = 'Connecting...';
+        $('status-text').textContent = __('status.connecting_ellipsis');
         $('chat-input').disabled = false;
         $('send-btn').disabled = false;
-        sysMsg('Connected with ' + label);
+        sysMsg(__('sys.connected_with', { label }));
         startPeerConnection();
       }
       break;
     case 'offer':
       if (!pc) createPC(false);
+      if (!pc) break;
       if (pc.signalingState === 'stable') {
         pc.setRemoteDescription(new RTCSessionDescription(msg.sdp))
           .then(() => { flushCandidates(); return pc.createAnswer(); })
@@ -385,11 +481,15 @@ function handle(msg) {
       }
       break;
     case 'ice-candidate':
-      if (pc && msg.candidate) {
-        if (pc.remoteDescription) {
-          pc.addIceCandidate(new RTCIceCandidate(msg.candidate)).catch(() => {});
+      if (msg.candidate) {
+        if (pc) {
+          if (pc.remoteDescription) {
+            pc.addIceCandidate(new RTCIceCandidate(msg.candidate)).catch(() => {});
+          } else {
+            pendingCandidates.push(msg.candidate);
+          }
         } else {
-          pendingCandidates.push(msg.candidate);
+          pendingIceBeforePC.push(msg.candidate);
         }
       }
       break;
@@ -399,15 +499,17 @@ function handle(msg) {
       if (!$('panel').classList.contains('open')) {
         unread++;
         updateBadge();
+        if (unread <= 3) toast(msg.text, 'info', 3000);
       }
       break;
     case 'partner-left':
-      sysMsg('Partner disconnected');
+      sysMsg(__('sys.partner_disconnected'));
       cleanupPC();
       playSound('disconnect');
-      $('status-text').textContent = 'Partner left - tap Next';
+      $('status-text').textContent = __('status.partner_left');
       $('chat-input').disabled = true;
       $('send-btn').disabled = true;
+      $('btn-next').classList.add('urgent');
       break;
     case 'disconnected':
       cleanupPC();
@@ -416,15 +518,15 @@ function handle(msg) {
       const el = $('online-count');
       if (el) {
         const count = msg.count;
-        el.textContent = `\u25CF ${count} online now`;
-        el.style.color = count > 0 ? 'var(--success)' : 'var(--text-secondary)';
+        el.textContent = __('online.now', { count });
+        el.style.color = count > 0 ? 'var(--success)' : 'var(--text-muted)';
       }
       const lc = $('live-count');
       if (lc) lc.textContent = msg.count || 0;
       const co = $('cta-online');
       if (co) {
         const c = msg.count || 0;
-        co.textContent = `${c} people online now`;
+        co.textContent = __('online.people', { count: c });
       }
       break;
   }
@@ -440,21 +542,23 @@ async function startLocalStream() {
   if (localStream) return localStream;
   if (!navigator.mediaDevices) throw new Error('Camera unavailable');
   if (navigator.mediaDevices.enumerateDevices) {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const hasMic = devices.some(d => d.kind === 'audioinput');
-    if (!hasMic) {
-      localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-      sysMsg('No mic found — video only');
-      return localStream;
-    }
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const hasMic = devices.some(d => d.kind === 'audioinput');
+      if (!hasMic) {
+        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        sysMsg(__('sys.no_mic_video'));
+        return localStream;
+      }
+    } catch (_) {}
   }
   try {
     localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: getAudioConstraints() });
     return localStream;
   } catch (e) {
-    if (e.name === 'NotAllowedError') throw new Error('Allow camera AND microphone in browser settings.');
+    if (e.name === 'NotAllowedError') throw new Error(__('sys.camera_settings'));
     localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-    sysMsg('Mic unavailable — video only');
+    sysMsg(__('sys.mic_unavailable'));
     return localStream;
   }
 }
@@ -463,44 +567,56 @@ async function startPeerConnection() {
   try {
     if (!localStream) localStream = await startLocalStream();
   } catch (e) {
-    $('status-text').textContent = 'Camera error';
+    $('status-text').textContent = __('status.camera_error');
     sysMsg(e.message);
     playSound('error');
     return;
   }
   $('self-video').srcObject = localStream;
+  startMicMeter(localStream);
   $('placeholder').classList.remove('hidden');
-  createPC(isInitiator);
-  if (isInitiator) {
+  if (!pc) createPC(isInitiator);
+  if (!pc) return;
+  if (isInitiator && !pc.localDescription) {
     try {
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
       safeSend({ type: 'offer', sdp: pc.localDescription });
-    } catch (e) { sysMsg('Connection error - tap Next'); }
+    } catch (e) { sysMsg(__('status.conn_error_tap')); }
   }
+  // Resume video/audio on first user click (autoplay policy workaround)
+  document.addEventListener('click', function resumeAudio() {
+    const pv = $('partner-video');
+    if (pv && pv.paused) pv.play().catch(() => {});
+    document.removeEventListener('click', resumeAudio);
+  }, { once: true });
 }
 
 function createPC() {
   if (pc) pc.close();
+  remoteStream = null;
+  if (!localStream) { sysMsg(__('status.no_camera')); return; }
+  // Flush any ICE candidates that arrived before pc existed
+  while (pendingIceBeforePC.length) {
+    pendingCandidates.push(pendingIceBeforePC.shift());
+  }
   pc = new RTCPeerConnection({ iceServers: CONFIG.iceServers });
   localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
   if (!localStream.getAudioTracks().length) pc.addTransceiver('audio', { direction: 'recvonly' });
   if (!localStream.getVideoTracks().length) pc.addTransceiver('video', { direction: 'recvonly' });
   pc.onicecandidate = e => { if (e.candidate) safeSend({ type: 'ice-candidate', candidate: e.candidate }); };
   pc.ontrack = e => {
-    if (e.track.kind === 'audio') {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const src = ctx.createMediaStreamSource(e.streams[0]);
-      const gain = ctx.createGain();
-      gain.gain.value = 3.0;
-      src.connect(gain);
-      gain.connect(ctx.destination);
-    } else {
-      $('partner-video').srcObject = e.streams[0];
+    if (e.track) {
+      if (!remoteStream) remoteStream = new MediaStream();
+      if (!remoteStream.getTrackById(e.track.id)) {
+        remoteStream.addTrack(e.track);
+      }
+      $('partner-video').srcObject = remoteStream;
+      $('partner-video').play().catch(() => {});
     }
     $('placeholder').classList.add('hidden');
     $('enc-badge').classList.remove('hidden');
-    $('status-text').textContent = 'Connected';
+    $('status-text').textContent = __('status.connected');
     setStatus('connected');
     startCallTimer();
     startQualityMonitor();
@@ -510,7 +626,7 @@ function createPC() {
   pc.oniceconnectionstatechange = () => {
     const q = $('quality-indicator');
     if (pc.iceConnectionState === 'failed') {
-      sysMsg('Connection failed. Tap Next.');
+      sysMsg(__('status.conn_failed'));
       playSound('error');
       if (q) { q.textContent = '!'; q.style.color = 'var(--danger)'; }
     } else if (pc.iceConnectionState === 'disconnected') {
@@ -540,7 +656,7 @@ function startQualityMonitor() {
           else if (report.framesPerSecond < 20) quality = 'fair';
         }
       }
-      const labels = { good: 'Excellent', fair: 'Good', poor: 'Poor' };
+      const labels = { good: __('quality.excellent'), fair: __('quality.good'), poor: __('quality.poor') };
       const colors = { good: 'var(--success)', fair: 'var(--warning)', poor: 'var(--danger)' };
       q.textContent = labels[quality];
       q.style.color = colors[quality];
@@ -583,9 +699,11 @@ function stopCallTimer() {
 function cleanupPC() {
   if (pc) { pc.close(); pc = null; }
   $('partner-video').srcObject = null;
+  remoteStream = null;
+  pendingIceBeforePC = [];
   $('placeholder').classList.remove('hidden');
   $('enc-badge').classList.add('hidden');
-  $('status-text').textContent = 'Disconnected';
+  $('status-text').textContent = __('status.disconnected');
   setStatus('disconnected');
   stopQualityMonitor();
   stopCallTimer();
@@ -593,20 +711,22 @@ function cleanupPC() {
   partnerId = null;
 }
 
-// ===== Navbar scroll =====
+// ===== Navbar scroll (debounced) =====
 let navScrolled = false;
-const landingEl = $('landing');
-if (landingEl) {
-  landingEl.addEventListener('scroll', () => {
+let scrollRaf = null;
+window.addEventListener('scroll', () => {
+  if (scrollRaf) return;
+  scrollRaf = requestAnimationFrame(() => {
+    scrollRaf = null;
     const nav = $('navbar');
     if (!nav) return;
-    const shouldScroll = landingEl.scrollTop > 50;
+    const shouldScroll = window.scrollY > 50;
     if (shouldScroll !== navScrolled) {
       navScrolled = shouldScroll;
       nav.classList.toggle('scrolled', shouldScroll);
     }
-  }, { passive: true });
-}
+  });
+}, { passive: true });
 
 // ===== Events =====
 let permStream = null;
@@ -633,7 +753,7 @@ async function doStartSearch() {
     await startLocalStream();
   } catch (e) {
     const errEl = $('start-error');
-    if (errEl) { errEl.textContent = '\u26A0 ' + e.message; errEl.classList.remove('hidden'); }
+    if (errEl) { errEl.textContent = __('errors.prefix') + e.message; errEl.classList.remove('hidden'); }
     return;
   }
   clearMsgs();
@@ -648,23 +768,27 @@ document.querySelectorAll('#start-btn, #hero-cta, #hero-cta-2').forEach(btn => {
   btn.addEventListener('click', startButtonHandler);
 });
 
-// Profile submit
-$('profile-submit').addEventListener('click', () => {
+function submitProfile() {
   const name = $('profile-name').value.trim();
   const age = $('profile-age').value.trim();
   const gender = $('profile-gender').value;
   const is18 = $('profile-18').checked;
   const err = $('profile-error');
   err.classList.add('hidden');
-  if (!name) { err.textContent = 'Please enter your name'; err.classList.remove('hidden'); return; }
-  if (!age || isNaN(age) || parseInt(age) < 13 || parseInt(age) > 120) { err.textContent = 'Please enter a valid age'; err.classList.remove('hidden'); return; }
-  if (!is18) { err.textContent = 'You must be 18 or older to use this app'; err.classList.remove('hidden'); return; }
+  if (!name) { err.textContent = __('validation.name_required'); err.classList.remove('hidden'); return; }
+  if (!age || isNaN(age) || parseInt(age) < 13 || parseInt(age) > 120) { err.textContent = __('validation.valid_age'); err.classList.remove('hidden'); return; }
+  if (!is18) { err.textContent = __('validation.age_consent'); err.classList.remove('hidden'); return; }
   setProfile({ name, age: parseInt(age), gender });
   if (permGranted) {
     showPreviewStep();
   } else {
     openModal('perm');
   }
+}
+$('profile-submit').addEventListener('click', submitProfile);
+// Enter key submits profile form
+document.querySelectorAll('#profile-name, #profile-age, #profile-gender').forEach(el => {
+  el.addEventListener('keydown', e => { if (e.key === 'Enter') submitProfile(); });
 });
 
 function showPreviewStep() {
@@ -689,7 +813,7 @@ function showPreviewStep() {
 // Permission button
 $('perm-btn').addEventListener('click', async () => {
   $('perm-error').classList.add('hidden');
-  $('perm-btn').textContent = 'Requesting...';
+  $('perm-btn').textContent = __('perm.requesting');
   $('perm-btn').disabled = true;
   try {
     if (permStream) permStream.getTracks().forEach(t => t.stop());
@@ -701,26 +825,26 @@ $('perm-btn').addEventListener('click', async () => {
     localStorage.setItem('ob_perm', '1');
     permGranted = true;
     const hasAudio = permStream.getAudioTracks().length > 0;
-    $('perm-btn').textContent = hasAudio ? '\u2705 Access Granted' : '\u2705 Camera Access Granted (no mic)';
+    $('perm-btn').textContent = hasAudio ? __('perm.granted') : __('perm.granted_no_mic');
     setTimeout(showPreviewStep, 600);
   } catch (e) {
     const errEl = $('perm-error');
     if (e.name === 'NotAllowedError') {
-      errEl.textContent = 'Camera was blocked. Please click the camera icon in your browser address bar and allow access, then try again.';
+      errEl.textContent = __('perm.blocked');
     } else if (e.name === 'NotFoundError') {
-      errEl.textContent = 'No camera found. Connect a camera and try again.';
+      errEl.textContent = __('perm.not_found');
     } else {
-      errEl.textContent = 'Camera access failed: ' + e.message;
+      errEl.textContent = __('perm.failed', { msg: e.message });
     }
     errEl.classList.remove('hidden');
-    $('perm-btn').textContent = 'Try Again';
+    $('perm-btn').textContent = __('perm.try_again');
     $('perm-btn').disabled = false;
   }
 });
 
 // Preview start
 $('preview-start').addEventListener('click', async () => {
-  $('preview-start').textContent = 'Searching...';
+  $('preview-start').textContent = __('search.btn_searching');
   $('preview-start').disabled = true;
   // Stop perm preview
   if (permStream) {
@@ -728,7 +852,7 @@ $('preview-start').addEventListener('click', async () => {
     permStream = null;
   }
   await doStartSearch();
-  $('preview-start').textContent = 'Start Searching';
+  $('preview-start').textContent = __('search.btn_start');
   $('preview-start').disabled = false;
 });
 
@@ -738,7 +862,7 @@ $('btn-cancel-find').addEventListener('click', () => {
   safeSend({ type: 'stop' });
   stopLocalStream();
   show('landing');
-  $('btn-cancel-find').textContent = 'Cancel';
+  $('btn-cancel-find').textContent = __('chat.cancel');
   $('chat-input').disabled = true;
   $('send-btn').disabled = true;
   resetButtons();
@@ -747,9 +871,10 @@ $('btn-cancel-find').addEventListener('click', () => {
 $('btn-next').addEventListener('click', () => {
   cleanupPC();
   safeSend({ type: 'next' });
-  $('status-text').textContent = 'Finding new partner...';
+  $('status-text').textContent = __('status.finding_new');
   startFindTimer();
   startSearchMessages();
+  $('btn-next').classList.remove('urgent');
 });
 
 $('btn-stop').addEventListener('click', () => {
@@ -832,7 +957,7 @@ document.querySelectorAll('.report-opt').forEach(btn => {
   btn.addEventListener('click', () => {
     const reason = btn.dataset.reason;
     safeSend({ type: 'report', reason });
-    $('report-status').textContent = 'Report submitted. Thank you.';
+    $('report-status').textContent = __('sys.report_submitted');
     $('report-status').style.color = '#22C55E';
     $('report-status').classList.remove('hidden');
     setTimeout(() => {
@@ -848,10 +973,10 @@ $('btn-settings').addEventListener('click', () => openModal('settings'));
 $('btn-share').addEventListener('click', () => {
   const url = window.location.href;
   if (navigator.share) {
-    navigator.share({ title: 'Ochena Bondhu', url }).catch(() => {});
+    navigator.share({ title: __('sys.share_title'), url }).catch(() => {});
   } else {
     navigator.clipboard.writeText(url).then(() => {
-      sysMsg('Link copied to clipboard');
+      sysMsg(__('sys.link_copied'));
     }).catch(() => {});
   }
 });
@@ -866,6 +991,11 @@ $('dark-toggle').addEventListener('change', () => {
 // Load noise setting
 const noiseVal = localStorage.getItem('ob_noise');
 if (noiseVal === '0') $('noise-toggle').checked = false;
+// Sound toggle
+if ($('sound-toggle')) {
+  $('sound-toggle').checked = soundEnabled;
+  $('sound-toggle').addEventListener('change', toggleSound);
+}
 $('panel').addEventListener('click', e => { if (e.target === $('panel')) $('panel').classList.remove('open'); });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
@@ -916,9 +1046,17 @@ function sendMsg() {
 function addMsg(text, who) {
   const d = document.createElement('div');
   d.className = 'msg ' + who;
-  d.textContent = text;
+  const now = new Date();
+  const time = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+  d.innerHTML = '<span class="msg-text">' + escapeHtml(text) + '</span><span class="msg-time">' + time + '</span>';
   $('messages').appendChild(d);
   $('messages').scrollTop = $('messages').scrollHeight;
+}
+
+function escapeHtml(s) {
+  const div = document.createElement('div');
+  div.textContent = s;
+  return div.innerHTML;
 }
 
 function flushCandidates() {
@@ -961,7 +1099,22 @@ function openPanel() {
   updateBadge();
 }
 
-connect();
+// Initialize language
+I18n.init().then(() => {
+  currentLocale = I18n.locale;
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === I18n.locale);
+  });
+  connect();
+});
+window.__onLangChange = (locale) => {
+  currentLocale = locale;
+  setStatus(currentStatus || 'disconnected');
+  if (currentStatus === 'searching') {
+    if (searchMsgTimer) { clearInterval(searchMsgTimer); searchMsgTimer = null; }
+    startSearchMessages();
+  }
+};
 
 // Theme toggle
 function setTheme(light) {

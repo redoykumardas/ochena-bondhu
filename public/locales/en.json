@@ -1,0 +1,238 @@
+{
+  "page_title": "Ochena Bondhu — Strangers, New Stories.",
+  "nav": {
+    "brand": "Ochena Bondhu",
+    "journey": "Journey",
+    "features": "Features",
+    "safety": "Safety",
+    "theme_tooltip": "Toggle theme",
+    "cta": "Get Started →"
+  },
+  "hero": {
+    "label": "Ochena Bondhu",
+    "title": "<span class=\"highlight-bn\">Strangers,</span><br>New Stories.",
+    "title_highlight": "Strangers,",
+    "title_rest": "New Stories.",
+    "desc": "Among thousands of people, maybe one is waiting for you. Start talking to someone new.",
+    "cta": "Get Started →",
+    "story_link": "See the story ↓",
+    "badge_no_reg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><polyline points=\"22 4 12 14.01 9 11.01\"/></svg> No Registration",
+    "badge_anon": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z\"/></svg> Anonymous",
+    "badge_free": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M12 1v3M20 12h3M4 12H1M5.64 5.64l2.12 2.12M16.24 16.24l2.12 2.12\"/><circle cx=\"12\" cy=\"12\" r=\"10\"/></svg> Free",
+    "badge_instant": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><polyline points=\"13 2 3 14 12 14 11 22 21 10 12 10 13 2\"/></svg> Instant",
+    "online_label": "Online now"
+  },
+  "journey": {
+    "label": "From alone to connection",
+    "title": "A simple \"Hello\" can<br><span class=\"highlight\">change everything.</span>",
+    "step1": "A lonely person",
+    "step2": "Mobile in hand",
+    "step3": "Connection found",
+    "step4": "New friend"
+  },
+  "evolution": {
+    "label": "Evolution of communication",
+    "title": "From letters to video calls—<br><span class=\"highlight\">communication changed, the need remains.</span>",
+    "year_1800": "1800",
+    "name_letter": "Letter",
+    "year_1900": "1900",
+    "name_phone": "Telephone",
+    "year_2000": "2000",
+    "name_internet": "Internet",
+    "year_2020": "2020",
+    "name_video": "Video Call",
+    "year_today": "Today",
+    "name_current": "Ochena Bondhu"
+  },
+  "world": {
+    "label": "Connection with the world",
+    "title": "The world is actually <span class=\"highlight\">very small.</span>",
+    "bd": "Bangladesh",
+    "japan": "Japan",
+    "germany": "Germany",
+    "india": "India",
+    "brazil": "Brazil"
+  },
+  "chat_preview": {
+    "label": "Live Chat",
+    "title": "A conversation can <span class=\"highlight\">change everything.</span>",
+    "name": "Ochena Bondhu",
+    "status": "Online",
+    "msg1": "Hello!",
+    "msg2": "Hi 👋",
+    "msg3": "How are you?",
+    "msg4": "Good 😊 Where are you from?",
+    "msg5": "Bangladesh 🇧🇩"
+  },
+  "features": {
+    "label": "Why Ochena Bondhu",
+    "title": "The best place for <span class=\"highlight\">new friendships</span>",
+    "anonymous_title": "Anonymous",
+    "anonymous_desc": "No name, email or personal info. Your identity is completely safe.",
+    "video_title": "Video Chat",
+    "video_desc": "Real-time video call. End-to-end encrypted.",
+    "safe_title": "Safe",
+    "safe_desc": "End-to-end encrypted video. Your conversation stays between you and your friend.",
+    "global_title": "Worldwide",
+    "global_desc": "Connect with new people from anywhere in the world. No limits.",
+    "fast_title": "Fast Connection",
+    "fast_desc": "Match in seconds. No waiting, start directly."
+  },
+  "feeling": {
+    "title": "The most beautiful friendships<br>start with a simple<br><span class=\"highlight\">\"Hello\"</span>."
+  },
+  "safety": {
+    "label": "Safety",
+    "title": "Your safety is <span class=\"highlight\">our priority</span>",
+    "ai_moderation": "AI Moderation",
+    "encrypted": "End-to-End Encrypted",
+    "instant_block": "Instant Block",
+    "easy_report": "Easy Reporting",
+    "age_18": "Only 18+"
+  },
+  "cta": {
+    "title": "Maybe your next friend is<br><span class=\"highlight\">waiting right now.</span>",
+    "desc": "Thousands of people are online. Start talking to someone new.",
+    "btn": "Get Started →"
+  },
+  "footer": {
+    "brand": "Ochena Bondhu",
+    "desc": "Create new stories with strangers. A safe and anonymous video chat platform.",
+    "links_heading": "Links",
+    "privacy": "Privacy Policy",
+    "terms": "Terms & Conditions",
+    "safety_link": "Safety",
+    "coming_soon": "Coming Soon",
+    "google_play": "Google Play",
+    "app_store": "App Store",
+    "copyright": "Made with love in Bangladesh &copy; 2026"
+  },
+  "overlay": {
+    "connecting": "Connecting",
+    "timeout": "Taking longer than usual. <a href=\"#\" id=\"conn-retry\" style=\"color:var(--primary)\">Try again</a>",
+    "retry": "Try again",
+    "server_unreachable": "Server unreachable. Retrying...",
+    "disconnected_reconnect": "Disconnected. Reconnecting...",
+    "conn_error": "Connection error. Retrying..."
+  },
+  "modal": {
+    "welcome_title": "Welcome",
+    "welcome_sub": "Let's get you connected.",
+    "name_label": "Name",
+    "name_placeholder": "Enter your name",
+    "age_label": "Age",
+    "age_placeholder": "Your age",
+    "gender_label": "Gender",
+    "gender_male": "Male",
+    "gender_female": "Female",
+    "gender_other": "Other",
+    "age_consent": "I am 18 years or older",
+    "continue_btn": "Continue",
+    "perm_title": "Camera &amp; Microphone",
+    "perm_sub": "We need access to your camera and microphone so you can talk with other people. Nothing is recorded.",
+    "perm_btn": "Allow Camera",
+    "preview_btn": "Start Searching",
+    "settings_title": "Settings",
+    "noise_label": "Noise Suppression",
+    "noise_desc": "Reduces background noise during calls",
+    "shortcuts_label": "Keyboard Shortcuts",
+    "shortcuts_hint": "<kbd>N</kbd> Next &middot; <kbd>M</kbd> Mic &middot; <kbd>C</kbd> Cam",
+    "dark_label": "Dark Theme",
+    "close_btn": "Close"
+  },
+  "chat": {
+    "searching": "Searching",
+    "cancel": "Cancel",
+    "connected": "Connected",
+    "e2e": "E2E Encrypted",
+    "finding": "Finding a partner...",
+    "tap_hint": "Tap Next anytime to skip",
+    "you": "You",
+    "next": "Next",
+    "mic": "Mic",
+    "cam": "Cam",
+    "report": "Report",
+    "chat": "Chat",
+    "settings": "Settings",
+    "share": "Share",
+    "stop": "Stop",
+    "panel_title": "Chat",
+    "msg_placeholder": "Message...",
+    "report_title": "Report User",
+    "report_spam": "Spam",
+    "report_harassment": "Harassment",
+    "report_nudity": "Nudity",
+    "report_fake_cam": "Fake Camera",
+    "report_other": "Other",
+    "match_connected": "Connected",
+    "connecting": "Connecting..."
+  },
+  "status": {
+    "searching": "Searching",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "finding": "Finding a partner...",
+    "waiting": "Waiting for a partner...",
+    "connecting_ellipsis": "Connecting...",
+    "partner_left": "Partner left - tap Next",
+    "conn_lost_tap": "Connection lost - tap Next",
+    "camera_error": "Camera error",
+    "conn_error_tap": "Connection error - tap Next",
+    "finding_new": "Finding new partner...",
+    "empty_title": "No one is available right now.<br>More people usually join during the evening.",
+    "try_again": "Try Again",
+    "no_camera": "No camera available",
+    "conn_failed": "Connection failed. Tap Next."
+  },
+  "sys": {
+    "conn_lost_reconnect": "Connection lost. Reconnecting...",
+    "conn_lost_next": "Connection lost. Tap Next to find someone new.",
+    "partner_disconnected": "Partner disconnected",
+    "no_mic_video": "No mic found — video only",
+    "mic_unavailable": "Mic unavailable — video only",
+    "camera_settings": "Allow camera AND microphone in browser settings.",
+    "report_submitted": "Report submitted. Thank you.",
+    "link_copied": "Link copied to clipboard",
+    "a_stranger": "a stranger",
+    "connected_with": "Connected with {label}",
+    "share_title": "Ochena Bondhu"
+  },
+  "perm": {
+    "requesting": "Requesting...",
+    "granted": "✅ Access Granted",
+    "granted_no_mic": "✅ Camera Access Granted (no mic)",
+    "blocked": "Camera was blocked. Please click the camera icon in your browser address bar and allow access, then try again.",
+    "not_found": "No camera found. Connect a camera and try again.",
+    "failed": "Camera access failed: {msg}",
+    "try_again": "Try Again"
+  },
+  "search": {
+    "msg1": "Looking for someone nearby...",
+    "msg2": "Finding the best match...",
+    "msg3": "Checking connection quality...",
+    "msg4": "Almost ready...",
+    "btn_searching": "Searching...",
+    "btn_start": "Start Searching"
+  },
+  "quality": {
+    "excellent": "Excellent",
+    "good": "Good",
+    "poor": "Poor"
+  },
+  "validation": {
+    "name_required": "Please enter your name",
+    "valid_age": "Please enter a valid age",
+    "age_consent": "You must be 18 or older to use this app"
+  },
+  "errors": {
+    "prefix": "⚠ "
+  },
+  "online": {
+    "now": "● {count} online now",
+    "people": "{count} people online now"
+  },
+  "lang": {
+    "bn": "বাংলা",
+    "en": "EN"
+  }
+}
