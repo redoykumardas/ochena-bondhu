@@ -101,7 +101,7 @@ body {
 #start { gap: 0; }
 
 .logo { display: flex; flex-direction: column; align-items: center; margin-bottom: 4px; }
-.logo-img { width: 72px; height: auto; margin-bottom: -4px; }
+.logo-img { width: 90px; height: auto; margin-bottom: -2px; }
 
 .logo h1 {
   font-size: 26px;
@@ -308,22 +308,22 @@ body {
   border: none;
   color: #ccc;
   cursor: pointer;
-  padding: 7px 0;
-  border-radius: 10px;
-  font-size: 10px;
+  padding: 8px 0;
+  border-radius: 12px;
+  font-size: 11px;
   flex: 1;
-  max-width: 56px;
+  max-width: 66px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1px;
+  gap: 3px;
   transition: background 0.2s;
   -webkit-tap-highlight-color: transparent;
 }
 
 .ctrl:active { background: rgba(255,255,255,0.14); }
 
-.ctrl svg { width: 22px; height: 22px; }
+.ctrl svg { width: 26px; height: 26px; }
 .ctrl .off { display: none; }
 .ctrl.muted .on { display: none; }
 .ctrl.muted .off { display: block; }
@@ -461,11 +461,12 @@ body {
 
   .ctrl {
     max-width: none;
-    padding: 8px 14px;
+    padding: 9px 18px;
     flex: none;
-    min-width: 52px;
+    min-width: 58px;
     background: transparent;
   }
+  .ctrl svg { width: 28px; height: 28px; }
   .ctrl:hover { background: rgba(255,255,255,0.08); }
 
   #panel { width: 340px; }
