@@ -319,11 +319,16 @@ $('perm-btn').addEventListener('click', async () => {
   $('perm-btn').disabled = true;
   try {
     if (permStream) permStream.getTracks().forEach(t => t.stop());
-    permStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    try {
+      permStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    } catch (_) {
+      permStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+    }
     $('perm-video').srcObject = permStream;
     localStorage.setItem('ob_perm', '1');
     permGranted = true;
-    $('perm-btn').textContent = '✅ Access Granted';
+    const hasAudio = permStream.getAudioTracks().length > 0;
+    $('perm-btn').textContent = hasAudio ? '✅ Access Granted' : '✅ Camera Access Granted (no mic)';
     setTimeout(() => {
       const p = getProfile();
       if (p) {
@@ -337,11 +342,11 @@ $('perm-btn').addEventListener('click', async () => {
   } catch (e) {
     const errEl = $('perm-error');
     if (e.name === 'NotAllowedError') {
-      errEl.textContent = 'Camera/mic was blocked. Please click the camera icon in your browser address bar and allow access, then try again.';
+      errEl.textContent = 'Camera was blocked. Please click the camera icon in your browser address bar and allow access, then try again.';
     } else if (e.name === 'NotFoundError') {
-      errEl.textContent = 'No camera or microphone found. Connect one and try again.';
+      errEl.textContent = 'No camera found. Connect a camera and try again.';
     } else {
-      errEl.textContent = 'Camera access failed: ' + e.message + '. Check browser settings.';
+      errEl.textContent = 'Camera access failed: ' + e.message;
     }
     errEl.classList.remove('hidden');
     $('perm-btn').textContent = 'Try Again';
