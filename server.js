@@ -18,6 +18,7 @@ wss.on('connection', (ws) => {
   ws.userId = userId;
   ws.partnerId = null;
   ws.inQueue = false;
+  ws.profile = null;
 
   ws.on('message', (data) => {
     try { handleMessage(ws, JSON.parse(data.toString())); }
@@ -31,7 +32,9 @@ wss.on('connection', (ws) => {
 
 function handleMessage(ws, msg) {
   switch (msg.type) {
-    case 'find': findPartner(ws); break;
+    case 'find':
+      if (msg.profile) ws.profile = msg.profile;
+      findPartner(ws); break;
     case 'offer': case 'answer': case 'ice-candidate': relay(ws, msg); break;
     case 'chat': relay(ws, msg); break;
     case 'next': handleNext(ws); break;
@@ -48,8 +51,11 @@ function findPartner(ws) {
     partner.partnerId = ws.userId;
     activePairs.set(ws.userId, partner.userId);
     activePairs.set(partner.userId, ws.userId);
-    ws.send(JSON.stringify({ type: 'matched', partnerId: partner.userId, initiator: true }));
-    partner.send(JSON.stringify({ type: 'matched', partnerId: ws.userId, initiator: false }));
+
+    const myInfo = ws.profile || {};
+    const partnerInfo = partner.profile || {};
+    ws.send(JSON.stringify({ type: 'matched', partnerId: partner.userId, initiator: true, partnerName: partnerInfo.name || 'a stranger', partnerGender: partnerInfo.gender || '' }));
+    partner.send(JSON.stringify({ type: 'matched', partnerId: ws.userId, initiator: false, partnerName: myInfo.name || 'a stranger', partnerGender: myInfo.gender || '' }));
   } else {
     ws.inQueue = true;
     waitingQueue.push(ws);

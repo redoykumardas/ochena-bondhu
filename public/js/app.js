@@ -72,7 +72,10 @@ function handle(msg) {
       $('status-text').textContent = 'Connecting...';
       $('chat-input').disabled = false;
       $('send-btn').disabled = false;
-      sysMsg('Connected to a stranger');
+      const partnerName = msg.partnerName || 'a stranger';
+      const partnerGender = msg.partnerGender || '';
+      const label = partnerGender ? `${partnerName} (${partnerGender})` : partnerName;
+      sysMsg('Connected with ' + label);
       startPeerConnection();
       break;
     case 'offer':
@@ -304,7 +307,8 @@ $('start-btn').addEventListener('click', async () => {
 
   clearMsgs();
   resetButtons();
-  ws.send(JSON.stringify({ type: 'find' }));
+  const p = getProfile();
+  ws.send(JSON.stringify({ type: 'find', profile: p || {} }));
   show('chat');
   $('enc-badge').classList.add('hidden');
   $('status-text').textContent = 'Finding a partner...';
