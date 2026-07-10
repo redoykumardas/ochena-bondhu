@@ -15,6 +15,7 @@ let reconnectTimer = null;
 let connecting = false;
 let findStartTime = null;
 let findTimer = null;
+let noOneTimer = null;
 let permGranted = localStorage.getItem('ob_perm') === '1';
 
 const $ = id => document.getElementById(id);
@@ -24,6 +25,7 @@ function connect() {
   if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
   ws = new WebSocket(CONFIG.wsUrl);
   connecting = true;
+  show('connecting');
   ws.onopen = () => { connecting = false; };
   ws.onmessage = e => handle(JSON.parse(e.data));
   ws.onclose = () => {
@@ -32,6 +34,26 @@ function connect() {
       reconnectTimer = setTimeout(connect, 3000);
     }
   };
+}
+
+function safeSend(data) {
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify(data));
+    return true;
+  }
+  return false;
+}
+
+function findPartner() {
+  const p = getProfile();
+  if (!safeSend({ type: 'find', profile: p || {} })) {
+    sysMsg('Connection lost. Reconnecting...');
+    const retry = setInterval(() => {
+      if (safeSend({ type: 'find', profile: p || {} })) {
+        clearInterval(retry);
+      }
+    }, 500);
+  }
 }
 
 function getProfile() {
@@ -81,10 +103,15 @@ function startFindTimer() {
   $('btn-cancel-find').classList.remove('hidden');
   if (findTimer) clearInterval(findTimer);
   findTimer = setInterval(updateWaitTime, 1000);
+  if (noOneTimer) clearTimeout(noOneTimer);
+  noOneTimer = setTimeout(() => {
+    sysMsg('No one online right now. Keep waiting or tap Next to try again.');
+  }, 15000);
 }
 
 function stopFindTimer() {
   if (findTimer) { clearInterval(findTimer); findTimer = null; }
+  if (noOneTimer) { clearTimeout(noOneTimer); noOneTimer = null; }
   $('status-wait').textContent = '';
   $('btn-cancel-find').classList.add('hidden');
   findStartTime = null;
@@ -128,6 +155,11 @@ function handle(msg) {
     case 'connected':
       userId = msg.userId;
       if (!partnerId) {
+        // if we were on chat screen searching, reconnect find
+        if (!$('chat').classList.contains('hidden') && permGranted) {
+          findPartner();
+          return;
+        }
         const p = getProfile();
         if (p && permGranted) {
           const t = document.querySelector('.hero-tag');
@@ -142,6 +174,7 @@ function handle(msg) {
       break;
     case 'waiting':
       $('status-text').textContent = 'Waiting for a partner...';
+      if (noOneTimer) clearTimeout(noOneTimer);
       break;
     case 'matched':
       partnerId = msg.partnerId;
@@ -382,8 +415,7 @@ $('start-btn').addEventListener('click', async () => {
   }
   clearMsgs();
   resetButtons();
-  const p = getProfile();
-  ws.send(JSON.stringify({ type: 'find', profile: p || {} }));
+  findPartner();
   show('chat');
   $('enc-badge').classList.add('hidden');
   $('status-text').textContent = 'Finding a partner...';
